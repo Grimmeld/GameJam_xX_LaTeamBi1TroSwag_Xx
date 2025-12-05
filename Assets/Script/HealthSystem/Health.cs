@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.FPS.Gameplay;
 using UnityEngine;
 
 public class Health : MonoBehaviour
@@ -48,21 +49,16 @@ public class Health : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            TakeDamage(10f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            GetHealth(20f);
-        }
-    }
 
     private void Death()
     {
-        Debug.Log("Player is dead");
+        if (TryGetComponent(out PlayerCharacterController characterController)) 
+        {
+            Debug.Log("Player is dead");
+
+            return;
+        }
+
+        // Enemy death
     }
 }
