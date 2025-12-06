@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyLoot : MonoBehaviour
 {
     [SerializeField] private GameObject loot; // faire une liste
+    
     // choisir le loot selon une liste
     // - Si pas beaucoup de munition > Loot munition
-    // - Pareil pour la sant�
+    // - Pareil pour la sante
 
     private void Update()
     {

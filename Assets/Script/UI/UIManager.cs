@@ -11,6 +11,9 @@ namespace Script.UI
         [SerializeField] private TextMeshProUGUI currentTxt;
         [SerializeField] private TextMeshProUGUI maxTxt;
 
+        [SerializeField] private TextMeshProUGUI currentAmmo;
+        [SerializeField] private TextMeshProUGUI stockAmmo;
+
         private void Start()
         {
             if (Instance)
@@ -29,5 +32,12 @@ namespace Script.UI
                 maxTxt.text = max.ToString();
         }
 
+        public void UpdateAmmoHUD(float current, float stock)
+        {
+            if(currentAmmo)
+                currentAmmo.text = current.ToString();
+            if(stockAmmo)
+                stockAmmo.text = stock.ToString();
+        }
     }
 }

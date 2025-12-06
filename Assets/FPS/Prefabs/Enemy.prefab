@@ -840,7 +840,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6451342913108058852}
-  - component: {fileID: 9130212531942541561}
+  - component: {fileID: -5577698483871781878}
   - component: {fileID: 822732416028151538}
   - component: {fileID: 4462162298554095299}
   - component: {fileID: 9114337172149299924}
@@ -867,7 +867,7 @@ Transform:
   - {fileID: 4364646715801690421}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9130212531942541561
+--- !u!114 &-5577698483871781878
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -876,11 +876,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 9127321828052714713}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f3360480ede93c4a820a9906b1d07f8, type: 3}
+  m_Script: {fileID: 11500000, guid: 015b23a2a51eb644b81940b04d15ac6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 10
+  currentHealth: 10
+  healthCanvas: {fileID: 0}
+  enemyRend: {fileID: 1614885628132411397}
+  DamageColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!195 &822732416028151538
 NavMeshAgent:
   m_ObjectHideFlags: 0

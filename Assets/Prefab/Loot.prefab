@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1697737213320565527}
   - component: {fileID: 6093137189520231712}
   - component: {fileID: 1380594606184743269}
+  - component: {fileID: 6001456409231610446}
   m_Layer: 0
   m_Name: Loot
   m_TagString: Untagged
@@ -103,11 +104,11 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1380594606184743269
 MonoBehaviour:
@@ -122,3 +123,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedRotation: 50
+--- !u!114 &6001456409231610446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419343205238260988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a26ff190136e24c966daeefbcc2951, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bonusAmmo: 10

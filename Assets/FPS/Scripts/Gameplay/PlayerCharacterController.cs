@@ -471,5 +471,16 @@ namespace Unity.FPS.Gameplay
             CharacterVelocity += force;
             if (force.magnitude > 1f) { IsGrounded = false; m_GroundNormal = Vector3.up; m_LastTimeJumped = Time.time; }
         }
+
+
+        // Get loot
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.TryGetComponent(out IInteractable interactable))
+            {
+                other.GetComponent<IInteractable>().Interaction(this);
+            }
+
+        }
     }
 }
