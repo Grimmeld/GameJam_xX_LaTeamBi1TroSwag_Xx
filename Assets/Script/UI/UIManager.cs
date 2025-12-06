@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Script.UI
 {
@@ -25,8 +26,12 @@ namespace Script.UI
         [SerializeField] private TextMeshProUGUI currentTxt;
         [SerializeField] private TextMeshProUGUI maxTxt;
 
-        [SerializeField] private TextMeshProUGUI currentAmmo;
+        //[SerializeField] private TextMeshProUGUI currentAmmo;
         [SerializeField] private TextMeshProUGUI stockAmmo;
+        [SerializeField] private Image spriteAmmo; // Image on the UI
+        [SerializeField] private Sprite spriteNull;
+        [SerializeField] private Sprite sprite1;
+        [SerializeField] private Sprite sprite2;
 
 
 
@@ -48,16 +53,29 @@ namespace Script.UI
         {
             if (currentTxt)
                 currentTxt.text = current.ToString();
-
             if (maxTxt)
                 maxTxt.text = max.ToString();
         }
 
         public void UpdateAmmoHUD(float current, float stock)
         {
-            if(currentAmmo)
-                currentAmmo.text = current.ToString();
-            if(stockAmmo)
+            if (spriteAmmo != null)
+            {
+                if (current == 0)
+                {
+                    spriteAmmo.sprite = spriteNull;
+                }
+                else if (current == 1)
+                {
+                    spriteAmmo.sprite = sprite1;
+                }
+                else if (current == 2)
+                {
+                    spriteAmmo.sprite = sprite2;
+                }
+            }
+
+            if (stockAmmo)
                 stockAmmo.text = stock.ToString();
         }
 

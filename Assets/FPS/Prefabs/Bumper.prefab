@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5720044196384885025}
   - component: {fileID: 5799122724995702943}
   - component: {fileID: 2572714594997565969}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Bumper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetDestination: {fileID: 0}
-  ArcHeight: 2
-  BounceSfx: {fileID: 0}
+  ArcHeight: 5
+  musicName: Bumper
 --- !u!65 &2572714594997565969
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -84,7 +84,7 @@ GameObject:
   - component: {fileID: 1191461485956242911}
   - component: {fileID: 3070389610069161485}
   - component: {fileID: 8734889298146123924}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -318,7 +318,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 648
+  m_VersionIndex: 675
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []

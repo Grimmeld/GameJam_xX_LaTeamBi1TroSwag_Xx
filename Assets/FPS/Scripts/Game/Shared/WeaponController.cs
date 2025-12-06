@@ -264,6 +264,11 @@ namespace FPS.Scripts.Game.Shared
             if (AudioManager.instance != null)
             {
                 AudioManager.instance.Play("Reload");
+                Sound sound = AudioManager.instance.GetSound("Reload");
+                if (sound != null)
+                {
+                    ReloadDuration = sound.clip.length; // Set the length
+                }
             }
 
             if (WeaponAnimator) WeaponAnimator.SetTrigger("Reload");
