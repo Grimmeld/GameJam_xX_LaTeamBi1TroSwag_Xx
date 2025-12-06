@@ -10,7 +10,7 @@ public class HealthLoot : MonoBehaviour, IInteractable
         Health health = playerChar.GetComponent<Health>();
         if (health != null)
         {
-            health.GetHealth(healthBonus);
+            health.AddHealth(healthBonus);
         }
         Destroy(gameObject);
     }

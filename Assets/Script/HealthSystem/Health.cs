@@ -33,7 +33,7 @@ public class Health : MonoBehaviour
 
     }
 
-    public void GetHealth(float bonus)
+    public void AddHealth(float bonus)
     {
 
         currentHealth += bonus;
@@ -45,6 +45,11 @@ public class Health : MonoBehaviour
         }
 
         UpdateHUD();
+    }
+
+    public float GetHealth()
+    {
+        return currentHealth;
     }
 
     private void UpdateHUD()
