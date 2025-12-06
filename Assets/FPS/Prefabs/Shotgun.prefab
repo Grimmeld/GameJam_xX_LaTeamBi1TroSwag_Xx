@@ -807,6 +807,7 @@ MonoBehaviour:
     m_Bits: 8
   MuzzleFlashPrefab: {fileID: 1376696033527059834, guid: 88108968e5b7c5d4b8820ffca0d86646, type: 3}
   MuzzleFlashRocketJumpPrefab: {fileID: 1376696033527059834, guid: 04fdc26cf78081847ab5f93c3ea4ecd9, type: 3}
+  EnemyImpactVfx: {fileID: 616156031599255053, guid: 0d70354f61172184b881dda537c78495, type: 3}
   ShootSfx: {fileID: 0}
   RocketJumpSfx: {fileID: 0}
   ChangeWeaponSfx: {fileID: 0}
@@ -823,23 +824,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.095
+      value: -0.067
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.172
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.z
