@@ -333,7 +333,7 @@ MonoBehaviour:
   ConeAngle: 30
   DamagePerShell: 50
   MinDamagePerShell: 5
-  RocketJumpForce: 20
+  RocketJumpForce: 12
   RocketJumpCooldown: 1.5
   ReloadDuration: 2
   RecoilForce: 6
