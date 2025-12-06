@@ -440,6 +440,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8e9b849ae2755b428b23edfa9686c79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WallRunFOV: 75
+  FOVTransitionDuration: 0.25
+  WallRunCoyoteTime: 0.2
   PlayerCamera: {fileID: 8303093099919959869}
   AudioSource: {fileID: 1272397862697293493}
   GravityDownForce: 20
@@ -452,7 +455,9 @@ MonoBehaviour:
   MaxSpeedCrouchedRatio: 0.5
   MaxSpeedInAir: 10
   AccelerationSpeedInAir: 25
-  SprintSpeedModifier: 1.5
+  DashForce: 15
+  DashCooldown: 1
+  DashSfx: {fileID: 0}
   KillHeight: -50
   RotationSpeed: 200
   AimingRotationMultiplier: 0.4
@@ -462,7 +467,6 @@ MonoBehaviour:
   CapsuleHeightCrouching: 0.9
   CrouchingSharpness: 15
   FootstepSfxFrequency: 0.3
-  FootstepSfxFrequencyWhileSprinting: 0.2
   FootstepSfx: {fileID: 0}
   JumpSfx: {fileID: 0}
   LandSfx: {fileID: 0}
@@ -472,6 +476,22 @@ MonoBehaviour:
   MaxSpeedForFallDamage: 40
   FallDamageAtMinSpeed: 10
   FallDamageAtMaxSpeed: 30
+  LandBobMultiplier: 1.5
+  LandPitchMultiplier: 10
+  LandBobSmoothTime: 0.15
+  WallRunLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  WallMaxDistance: 1
+  MinWallRunHeight: 1.5
+  WallGravityDownForce: 5
+  WallRunSpeedMultiplier: 1.2
+  WallJumpForce: {x: 10, y: 8}
+  MaxAngleRoll: 15
+  CamTransitionDuration: 10
+  NormalizedAngleThreshold: 0.1
+  WallRunUpwardDashForce: 8
+  WallRunLookUpThreshold: 15
 --- !u!114 &298744117520805562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -518,7 +538,7 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
   m_Enabled: 1

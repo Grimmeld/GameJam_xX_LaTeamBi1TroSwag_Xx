@@ -123,10 +123,10 @@ namespace FPS.Scripts.Gameplay.Managers
             // shoot handling
             var activeWeapon = GetActiveWeapon();
 
-            if (activeWeapon != null && activeWeapon.IsReloading)
+            if (activeWeapon && activeWeapon.IsReloading)
                 return;
 
-            if (activeWeapon != null && m_WeaponSwitchState == WeaponSwitchState.Up)
+            if (activeWeapon && m_WeaponSwitchState == WeaponSwitchState.Up)
             {
                 if (!activeWeapon.AutomaticReload && m_InputHandler.GetReloadButtonDown() &&
                     activeWeapon.CurrentAmmoRatio < 1.0f)
@@ -296,8 +296,7 @@ namespace FPS.Scripts.Gameplay.Managers
                 if (m_PlayerCharacterController.IsGrounded)
                     characterMovementFactor =
                         Mathf.Clamp01(playerCharacterVelocity.magnitude /
-                                      (m_PlayerCharacterController.MaxSpeedOnGround *
-                                       m_PlayerCharacterController.SprintSpeedModifier));
+                                      (m_PlayerCharacterController.MaxSpeedOnGround));
 
                 m_WeaponBobFactor =
                     Mathf.Lerp(m_WeaponBobFactor, characterMovementFactor, BobSharpness * Time.deltaTime);
