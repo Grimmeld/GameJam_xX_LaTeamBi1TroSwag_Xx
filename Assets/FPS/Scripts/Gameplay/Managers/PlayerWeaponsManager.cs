@@ -414,8 +414,8 @@ namespace FPS.Scripts.Gameplay.Managers
                     var layerIndex =
                         Mathf.RoundToInt(Mathf.Log(FpsWeaponLayer.value,
                             2)); // This function converts a layermask to a layer index
-                    foreach (var t in weaponInstance.gameObject.GetComponentsInChildren<Transform>(true))
-                        t.gameObject.layer = layerIndex;
+                    // foreach (var t in weaponInstance.gameObject.GetComponentsInChildren<Transform>(true))
+                    //     t.gameObject.layer = layerIndex;
 
                     m_WeaponSlots[i] = weaponInstance;
 
