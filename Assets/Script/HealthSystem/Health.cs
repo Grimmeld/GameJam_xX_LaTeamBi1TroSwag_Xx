@@ -23,6 +23,7 @@ public class Health : MonoBehaviour
     {
         currentHealth = maxHealth;
         UpdateHUD();
+
     }
 
     public void TakeDamage(float damage)
@@ -81,4 +82,5 @@ public class Health : MonoBehaviour
             return;
         }
     }
+
 }
