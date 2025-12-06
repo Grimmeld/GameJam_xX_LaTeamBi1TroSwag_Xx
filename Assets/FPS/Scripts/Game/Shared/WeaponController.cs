@@ -45,6 +45,8 @@ namespace FPS.Scripts.Game.Shared
         public Animator WeaponAnimator;
         public LayerMask HitMask;
         public GameObject MuzzleFlashPrefab;
+        public GameObject MuzzleFlashRocketJumpPrefab;
+
 
         [Header("Audio")] public AudioClip ShootSfx;
 
@@ -224,9 +226,9 @@ namespace FPS.Scripts.Game.Shared
                 var clipToPlay = RocketJumpSfx ? RocketJumpSfx : ShootSfx;
                 if (clipToPlay) m_AudioSource.PlayOneShot(clipToPlay);
 
-                if (MuzzleFlashPrefab)
+                if (MuzzleFlashRocketJumpPrefab)
                 {
-                    var flash = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation,
+                    var flash = Instantiate(MuzzleFlashRocketJumpPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation,
                         WeaponMuzzle);
                     Destroy(flash, 0.5f);
                 }
