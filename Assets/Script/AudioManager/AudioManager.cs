@@ -83,16 +83,20 @@ public class AudioManager : MonoBehaviour
     }
 
 
-    public IEnumerator PlayMusicAndDelete(string name, GameObject actor)
+    public IEnumerator PlayOnActor(string name, GameObject actor)
     {
-        Sound sound = GetSound(name, actor);
-        Debug.Log(sound.clip.length);
+        Sound sound = GetSound(name);
+
+        sound.source = actor.gameObject.AddComponent<AudioSource>();
+        AddToSource(sound);
+        sound.source.Play();
+
         yield return new WaitForSeconds(sound.clip.length);
 
         Destroy(actor.GetComponent<AudioSource>());
     }
 
-    public Sound GetSound(string name, GameObject actor)
+    public Sound GetSound(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.nameMusic == name);
         if (s == null)
@@ -101,19 +105,13 @@ public class AudioManager : MonoBehaviour
         }
 
 
-            s.source = actor.gameObject.AddComponent<AudioSource>();
-            AddToSource(s);
-        
-
-        s.source.Play();
-
         return s;
 
     }
 
-    //private void Start()
-    //{
-    //    Play("JamSongFinal");
-    //}
+    private void Start()
+    {
+        Play("JamSongFinal");
+    }
 
 }

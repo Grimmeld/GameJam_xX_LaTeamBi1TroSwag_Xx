@@ -54,6 +54,7 @@ MonoBehaviour:
   healthCanvas: {fileID: 0}
   enemyRend: {fileID: 0}
   DamageColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  deathSound: EnemyDeath
 --- !u!195 &822732416028151538
 NavMeshAgent:
   m_ObjectHideFlags: 0
