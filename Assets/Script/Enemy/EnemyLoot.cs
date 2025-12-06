@@ -21,15 +21,20 @@ public class EnemyLoot : MonoBehaviour
     // - Pareil pour la sante
 
     private GameObject player;
+    
+    [SerializeField] public AudioSource deathSound;
 
     private void Start()
     {
+        deathSound = GetComponent<AudioSource>();
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
 
     private void OnDestroy()
     {
+         deathSound.Play();
+        
         if(loots.Count > 0)
         {
             if (player != null)
