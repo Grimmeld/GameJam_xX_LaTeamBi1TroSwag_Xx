@@ -94,6 +94,15 @@ namespace Script.UI
             hudMenu.SetActive(true);
         }
 
+        public void ExitGame()
+        {
+#if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+#else
+Application.Quit();
+#endif
+        }
+
         private void Update()
         {
             if(m_InputHandler.GetPauseButtonDown() && !isPaused)
