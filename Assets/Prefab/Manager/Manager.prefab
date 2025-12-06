@@ -81,7 +81,7 @@ MonoBehaviour:
     typeMusic: 0
     clip: {fileID: 8300000, guid: 35f048b3a920faf46a3d94754e6d3fe1, type: 3}
     mixer: {fileID: 6133675373217254149, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
-    volume: 0.5
+    volume: 0.1
     pitch: 1.5
     spatialBlend: 0
     loop: 1

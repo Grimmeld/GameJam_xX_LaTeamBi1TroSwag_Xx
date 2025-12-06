@@ -109,9 +109,9 @@ public class AudioManager : MonoBehaviour
 
     }
 
-    //private void Start()
-    //{
-    //    Play("JamSongFinal");
-    //}
+    private void Start()
+    {
+        Play("JamSongFinal");
+    }
 
 }
