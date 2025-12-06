@@ -78,6 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - nameMusic: JamSongFinal
+    typeMusic: 0
     clip: {fileID: 8300000, guid: 1f6b6ba5e57741045ad780bb62084301, type: 3}
     mixer: {fileID: 6133675373217254149, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
     volume: 0.5
@@ -87,12 +88,163 @@ MonoBehaviour:
     playOnAwake: 1
     source: {fileID: 0}
   - nameMusic: Reload
+    typeMusic: 0
     clip: {fileID: 8300000, guid: d704200f078192b4e91c95baad92dac5, type: 3}
     mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
     volume: 0.5
     pitch: 1.5
     spatialBlend: 0
     loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: Bumper
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 4f206b5a273451d488fcc46e3be2d56e, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
     playOnAwake: 1
+    source: {fileID: 0}
+  - nameMusic: Cinematic
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 93fcd1555f282404b897774669c229f4, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 1
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: Fire
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 1752b92c24dd7cc438437f9ab9934e02, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: Stairs
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 34c4eca9282cfb84d99a338aef914e59, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: ShootPrimary
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 34f5b7267e82d004aba171ebc2731ec4, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: ShootSecondary
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: e5f745b802a89e3409a2b05219914381, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: PlayerHurt1
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 97cf11414d991b2408930d1b36e75bce, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: PlayerHurt2
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 79de58adcb3a84347ae58253dddc2d51, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: PlayerHurt3
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: e4fff032c5a900e498892c20df828e33, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogEnd
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: b95dd54d532de28419101627e0bf4f5c, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogFight1
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 6623a46ce1c5d7c468bf3f86f632fa85, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogFight2
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 7f0575658ec047946a262afffe61c73b, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogFight3
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: b9615da2c004b7d4f926b26f5ef9b528, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogLightFire
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 1706d6e952e9ee044b4efc8d880641f7, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: DialogOpening
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: d7ece4f8593c10244a1f31f63f2c3469, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
     source: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
