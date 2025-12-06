@@ -1,3 +1,4 @@
+using System;
 using Script.Enemy;
 using Script.Enemy.Unity.FPS.Game;
 using Script.UI;
@@ -7,11 +8,17 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    // Player health
+
     [SerializeField] private float maxHealth;
     private float currentHealth;
 
 
+    public Action<float, float> OnPlayerHealthChanged;
+    
+
+    public Action OnPlayerDied;
+    
+    
     private void Start()
     {
         currentHealth = maxHealth;
@@ -21,6 +28,8 @@ public class Health : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
+        OnPlayerHealthChanged?.Invoke(currentHealth, maxHealth);
+
         UpdateHUD();
         
         Debug.Log($"{name} took: {damage} dmg");
@@ -35,8 +44,8 @@ public class Health : MonoBehaviour
 
     public void AddHealth(float bonus)
     {
-
         currentHealth += bonus;
+        OnPlayerHealthChanged?.Invoke(currentHealth, maxHealth);
 
         if (currentHealth >= maxHealth)
         {
@@ -66,12 +75,10 @@ public class Health : MonoBehaviour
         if (TryGetComponent(out PlayerCharacterController characterController)) 
         {
             Debug.Log("Player is dead");
+            
+            OnPlayerDied?.Invoke();
 
             return;
         }
-
-        
-
-        
     }
 }
