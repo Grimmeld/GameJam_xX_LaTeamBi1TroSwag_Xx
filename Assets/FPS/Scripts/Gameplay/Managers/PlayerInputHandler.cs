@@ -5,7 +5,6 @@ namespace Unity.FPS.Gameplay
 {
     public class GameConstants
     {
-        // all the constant string used across the game
         public const string k_AxisNameVertical = "Vertical";
         public const string k_AxisNameHorizontal = "Horizontal";
         public const string k_MouseAxisNameVertical = "Mouse Y";
@@ -54,10 +53,10 @@ namespace Unity.FPS.Gameplay
         void Start()
         {
             m_PlayerCharacterController = GetComponent<PlayerCharacterController>();
-            //DebugUtility.HandleErrorIfNullGetComponent<PlayerCharacterController, PlayerInputHandler>(
-            //    m_PlayerCharacterController, this, gameObject);
-            //m_GameFlowManager = FindFirstObjectByType<GameFlowManager>();
-            //DebugUtility.HandleErrorIfNullFindObject<GameFlowManager, PlayerInputHandler>(m_GameFlowManager, this);
+            // DebugUtility.HandleErrorIfNullGetComponent<PlayerCharacterController, PlayerInputHandler>(
+            //     m_PlayerCharacterController, this, gameObject);
+            // m_GameFlowManager = FindFirstObjectByType<GameFlowManager>();
+            // DebugUtility.HandleErrorIfNullFindObject<GameFlowManager, PlayerInputHandler>(m_GameFlowManager, this);
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -154,11 +153,13 @@ namespace Unity.FPS.Gameplay
         {
             if (CanProcessInput())
             {
+
                 bool isGamepad = Input.GetAxis(GameConstants.k_ButtonNameGamepadAim) != 0f;
-                bool i = isGamepad
-                    ? (Input.GetAxis(GameConstants.k_ButtonNameGamepadAim) > 0f)
-                    : Input.GetButton(GameConstants.k_ButtonNameAim);
-                return i;
+                
+
+                return isGamepad 
+                    ? (Input.GetAxis(GameConstants.k_ButtonNameGamepadAim) > 0f) 
+                    : Input.GetButton("FireSecondary"); 
             }
 
             return false;
