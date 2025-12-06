@@ -1,7 +1,7 @@
-﻿using Script.Enemy;
-using Script.UI;
-using System;
+﻿using System;
 using System.Collections;
+using Script.Enemy;
+using Script.UI;
 using Unity.FPS.Gameplay;
 using UnityEngine;
 
@@ -10,13 +10,10 @@ namespace FPS.Scripts.Game.Shared
     [RequireComponent(typeof(AudioSource))]
     public class WeaponController : MonoBehaviour
     {
-
-
         [Header("Primary Fire (Single Shot)")] [Tooltip("Max distance for damage")]
         public float WeaponRange = 15f;
-        
-        [Tooltip("Knockback ennemy force")]
-        public float ImpactForce = 15f;
+
+        [Tooltip("Knockback ennemy force")] public float ImpactForce = 15f;
 
         [Tooltip("Cone angle in degrees")] [Range(0, 90)]
         public float ConeAngle = 30f;
@@ -47,6 +44,7 @@ namespace FPS.Scripts.Game.Shared
         public GameObject MuzzleFlashPrefab;
         public GameObject MuzzleFlashRocketJumpPrefab;
 
+        [SerializeField] public GameObject EnemyImpactVfx;
 
         [Header("Audio")] public AudioClip ShootSfx;
 
@@ -54,15 +52,14 @@ namespace FPS.Scripts.Game.Shared
         public AudioClip ChangeWeaponSfx;
         public AudioClip ReloadSfx;
         public AudioClip DryFireSfx;
-        private AudioSource m_AudioSource;
 
-        [Header("Reload")]
-        [SerializeField] public int ammoStock;
+        [Header("Reload")] [SerializeField] public int ammoStock;
+
+        private readonly int m_MaxAmmo = 2;
+        private AudioSource m_AudioSource;
         private int m_CurrentAmmo;
         private float m_LastRocketJumpTime;
         private float m_LastTimeShot;
-        private readonly int m_MaxAmmo = 2;
-
 
 
         public Action OnShoot;
@@ -81,7 +78,6 @@ namespace FPS.Scripts.Game.Shared
             m_CurrentAmmo = m_MaxAmmo;
             m_AudioSource = GetComponent<AudioSource>();
             if (!m_AudioSource) m_AudioSource = gameObject.AddComponent<AudioSource>();
-
         }
 
         private void Start()
@@ -120,18 +116,16 @@ namespace FPS.Scripts.Game.Shared
             return false;
         }
 
-        
-        
+
         private bool TryShoot()
         {
             Debug.Log("Try to shoot");
 
-            
+
             if (IsReloading || Time.time < m_LastTimeShot + DelayBetweenShots) return false;
 
             if (m_CurrentAmmo > 0)
             {
-                
                 HandleShot();
                 return true;
             }
@@ -142,8 +136,6 @@ namespace FPS.Scripts.Game.Shared
 
         private void DetectAndDamage()
         {
-            Debug.Log("1");
-            
             var hits = Physics.OverlapSphere(WeaponMuzzle.position, WeaponRange, HitMask);
 
             foreach (var hit in hits)
@@ -153,46 +145,46 @@ namespace FPS.Scripts.Game.Shared
 
                 if (Vector3.Angle(WeaponMuzzle.forward, dirToTarget) < ConeAngle / 2)
                 {
-                    
                     var dist = Vector3.Distance(WeaponMuzzle.position, target.position);
-            
+
                     if (!Physics.Raycast(WeaponMuzzle.position, dirToTarget, dist, ~HitMask))
                     {
-                        Debug.Log("2");
-
-                        
                         var totalDmg = Mathf.Lerp(DamagePerShell, MinDamagePerShell, dist / WeaponRange);
 
-                        //if(hit.TryGetComponent<Health>(out var playerHealth))
-                        if(hit.TryGetComponent<HealthEnemy>(out var playerHealth))
+                        if (hit.TryGetComponent<HealthEnemy>(out var playerHealth))
                         {
-                            Debug.Log("3");
+                            playerHealth.TakeDamage(totalDmg);
 
-                            playerHealth.TakeDamage(damage: totalDmg);
+                            if (Physics.Raycast(WeaponMuzzle.position, dirToTarget, out var impactHit, dist + 1f,
+                                    HitMask))
+                            {
+                                Instantiate(EnemyImpactVfx, impactHit.point, Quaternion.LookRotation(impactHit.normal));
+                            }
+                            else
+                            {
+
+                                var closestPoint = hit.ClosestPoint(WeaponMuzzle.position);
+                                var blood = Instantiate(EnemyImpactVfx, closestPoint, Quaternion.LookRotation(-dirToTarget));
+                                
+                                // TODO this is bad
+                                Destroy(blood, 3f);
+                            }
+
                         }
 
-                
                         if (hit.TryGetComponent<FlyingEnemyAi>(out var flyingEnemy))
-                        {
-                            Debug.Log("4");
-                            
                             flyingEnemy.ApplyKnockback(dirToTarget * ImpactForce);
-                        }
                         else if (hit.TryGetComponent<Rigidbody>(out var rb))
-                        {
-                            Debug.Log("5");
-
                             rb.AddForce(dirToTarget * ImpactForce, ForceMode.Impulse);
-                        }
                     }
                 }
             }
         }
-        
+
         private void HandleShot()
         {
             m_LastTimeShot = Time.time;
-            
+
             Debug.Log("SHOT");
 
 
@@ -214,7 +206,6 @@ namespace FPS.Scripts.Game.Shared
 
             OnShoot?.Invoke();
         }
-
 
 
         private void TryRocketJump()
@@ -242,13 +233,11 @@ namespace FPS.Scripts.Game.Shared
         private void ApplyRocketJumpForce()
         {
             if (Owner)
-            {
                 if (Owner.TryGetComponent<PlayerCharacterController>(out var playerController))
                 {
                     var knockbackDirection = -WeaponMuzzle.forward;
                     playerController.AddForce(knockbackDirection * RocketJumpForce);
                 }
-            }
         }
 
         public void StartReloadAnimation()
@@ -264,11 +253,8 @@ namespace FPS.Scripts.Game.Shared
             if (AudioManager.instance != null)
             {
                 AudioManager.instance.Play("Reload");
-                Sound sound = AudioManager.instance.GetSound("Reload");
-                if (sound != null)
-                {
-                    ReloadDuration = sound.clip.length; // Set the length
-                }
+                var sound = AudioManager.instance.GetSound("Reload");
+                if (sound != null) ReloadDuration = sound.clip.length; // Set the length
             }
 
             if (WeaponAnimator) WeaponAnimator.SetTrigger("Reload");
@@ -276,14 +262,14 @@ namespace FPS.Scripts.Game.Shared
 
             if (ammoStock >= 0)
             {
-                if (m_CurrentAmmo <= 0) { ammoStock = ammoStock - (m_MaxAmmo - m_CurrentAmmo); } // Change ammo stock
+                if (m_CurrentAmmo <= 0) ammoStock = ammoStock - (m_MaxAmmo - m_CurrentAmmo); // Change ammo stock
             }
             else
             {
                 Debug.Log("Can't reload");
             }
 
-                m_CurrentAmmo = m_MaxAmmo;
+            m_CurrentAmmo = m_MaxAmmo;
 
             UpdateHUD();
 
@@ -292,8 +278,7 @@ namespace FPS.Scripts.Game.Shared
 
         public void UpdateHUD()
         {
-            if (UIManager.Instance) { UIManager.Instance.UpdateAmmoHUD(m_CurrentAmmo, ammoStock); }
+            if (UIManager.Instance) UIManager.Instance.UpdateAmmoHUD(m_CurrentAmmo, ammoStock);
         }
-            
     }
 }
