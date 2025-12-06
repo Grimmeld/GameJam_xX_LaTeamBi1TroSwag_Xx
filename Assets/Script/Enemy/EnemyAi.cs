@@ -38,14 +38,12 @@ namespace Unity.FPS.Game
             m_Agent.speed = MoveSpeed;
             m_Agent.stoppingDistance = AttackRange;
 
-            // Trouver le joueur automatiquement
             PlayerCharacterController player = FindFirstObjectByType<PlayerCharacterController>();
             if (player)
             {
                 m_PlayerTransform = player.transform;
             }
 
-            // Sauvegarder la couleur de base
             if (EnemyRenderer) m_OriginalColor = EnemyRenderer.material.color;
         }
 
@@ -72,7 +70,7 @@ namespace Unity.FPS.Game
             }
             else
             {
-                // 1.b or give up shurggg
+                // 1.b or give up
                 m_Agent.isStopped = true;
                 if (EnemyRenderer) EnemyRenderer.material.color = m_OriginalColor;
             }
@@ -98,10 +96,10 @@ namespace Unity.FPS.Game
                 
                 if (EnemyRenderer) StartCoroutine(FlashColor());
 
-                Debug.Log("L'ennemi attaque le joueur !");
-
-
-                // m_PlayerTransform.SendMessage("TakeDamage", Damage, SendMessageOptions.DontRequireReceiver);
+                if(m_PlayerTransform.TryGetComponent<Health>(out var playerHealth))
+                {
+                    playerHealth.TakeDamage(damage: Damage);
+                }
             }
         }
 

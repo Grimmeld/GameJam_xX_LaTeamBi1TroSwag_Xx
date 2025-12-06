@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Script.Enemy;
 using Unity.FPS.Gameplay;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ namespace FPS.Scripts.Game.Shared
     {
         [Header("Primary Fire (Single Shot)")] [Tooltip("Max distance for damage")]
         public float WeaponRange = 15f;
+        
+        [Tooltip("Knockback ennemy force")]
+        public float ImpactForce = 15f;
 
         [Tooltip("Cone angle in degrees")] [Range(0, 90)]
         public float ConeAngle = 30f;
@@ -30,7 +34,7 @@ namespace FPS.Scripts.Game.Shared
         public float RecoilForce = 4f;
 
         [Tooltip("Delay between the two shots (Fire Rate)")]
-        public float DelayBetweenShots = 0.2f; // Nouveau paramètre exposé pour régler la vitesse entre les 2 tirs
+        public float DelayBetweenShots = 0.2f;
 
         [Header("References")] public GameObject WeaponRoot;
 
@@ -47,7 +51,6 @@ namespace FPS.Scripts.Game.Shared
         public AudioClip DryFireSfx;
         private AudioSource m_AudioSource;
 
-        // --- Internal State ---
         private int m_CurrentAmmo;
         private float m_LastRocketJumpTime;
         private float m_LastTimeShot;
@@ -73,13 +76,11 @@ namespace FPS.Scripts.Game.Shared
 
         private void Update()
         {
-            // Listen for Secondary Fire (Right Click)
             if (IsWeaponActive && !IsReloading)
                 if (Input.GetButtonDown("FireSecondary"))
                     TryRocketJump();
         }
 
-        // --- DEBUG ---
         private void OnDrawGizmosSelected()
         {
             if (!WeaponMuzzle) return;
@@ -98,19 +99,24 @@ namespace FPS.Scripts.Game.Shared
             if (show && ChangeWeaponSfx) m_AudioSource.PlayOneShot(ChangeWeaponSfx);
         }
 
-        // --- PRIMARY FIRE ---
         public bool HandleShootInputs(bool inputDown, bool inputHeld, bool inputUp)
         {
             if (inputDown) return TryShoot();
             return false;
         }
 
+        
+        
         private bool TryShoot()
         {
+            Debug.Log("Try to shoot");
+
+            
             if (IsReloading || Time.time < m_LastTimeShot + DelayBetweenShots) return false;
 
             if (m_CurrentAmmo > 0)
             {
+                
                 HandleShot();
                 return true;
             }
@@ -119,33 +125,10 @@ namespace FPS.Scripts.Game.Shared
             return false;
         }
 
-        private void HandleShot()
-        {
-            m_LastTimeShot = Time.time;
-
-
-            m_CurrentAmmo--;
-
-            // Visuals
-            if (ShootSfx) m_AudioSource.PlayOneShot(ShootSfx);
-            if (WeaponAnimator)
-                WeaponAnimator
-                    .SetTrigger("Fire"); // Assure-toi que ton Animator a bien une animation simple pour "Fire"
-            if (MuzzleFlashPrefab)
-            {
-                var flash = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation, WeaponMuzzle);
-                Destroy(flash, 0.5f);
-            }
-
-            // Damage Logic
-            DetectAndDamage();
-
-            OnShoot?.Invoke();
-        }
-
         private void DetectAndDamage()
         {
-            // TODO use NonAllocVersion
+            Debug.Log("1");
+            
             var hits = Physics.OverlapSphere(WeaponMuzzle.position, WeaponRange, HitMask);
 
             foreach (var hit in hits)
@@ -155,22 +138,69 @@ namespace FPS.Scripts.Game.Shared
 
                 if (Vector3.Angle(WeaponMuzzle.forward, dirToTarget) < ConeAngle / 2)
                 {
+                    
                     var dist = Vector3.Distance(WeaponMuzzle.position, target.position);
+            
                     if (!Physics.Raycast(WeaponMuzzle.position, dirToTarget, dist, ~HitMask))
                     {
-                        // Calculate Damage based distance
-                        var totalDmg = Mathf.Lerp(DamagePerShell, MinDamagePerShell, dist / WeaponRange);
-
+                        Debug.Log("2");
 
                         
-                        // Use the health
-                        target.SendMessage("TakeDamage", totalDmg, SendMessageOptions.DontRequireReceiver);
+                        var totalDmg = Mathf.Lerp(DamagePerShell, MinDamagePerShell, dist / WeaponRange);
+
+                        if(hit.TryGetComponent<Health>(out var playerHealth))
+                        {
+                            Debug.Log("3");
+
+                            playerHealth.TakeDamage(damage: totalDmg);
+                        }
+
+                
+                        if (hit.TryGetComponent<FlyingEnemyAi>(out var flyingEnemy))
+                        {
+                            Debug.Log("4");
+                            
+                            flyingEnemy.ApplyKnockback(dirToTarget * ImpactForce);
+                        }
+                        else if (hit.TryGetComponent<Rigidbody>(out var rb))
+                        {
+                            Debug.Log("5");
+
+                            rb.AddForce(dirToTarget * ImpactForce, ForceMode.Impulse);
+                        }
                     }
                 }
             }
         }
+        
+        private void HandleShot()
+        {
+            m_LastTimeShot = Time.time;
+            
+            Debug.Log("SHOT");
 
-        // --- SECONDARY FIRE (Rocket Jump) ---
+
+
+            m_CurrentAmmo--;
+
+            // Visuals
+            if (ShootSfx) m_AudioSource.PlayOneShot(ShootSfx);
+            if (WeaponAnimator)
+                WeaponAnimator
+                    .SetTrigger("Fire");
+            if (MuzzleFlashPrefab)
+            {
+                var flash = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation, WeaponMuzzle);
+                Destroy(flash, 0.5f);
+            }
+
+            DetectAndDamage();
+
+            OnShoot?.Invoke();
+        }
+
+
+
         private void TryRocketJump()
         {
             if (Time.time >= m_LastRocketJumpTime + RocketJumpCooldown)
@@ -197,8 +227,7 @@ namespace FPS.Scripts.Game.Shared
         {
             if (Owner)
             {
-                var playerController = Owner.GetComponent<PlayerCharacterController>();
-                if (playerController)
+                if (Owner.TryGetComponent<PlayerCharacterController>(out var playerController))
                 {
                     var knockbackDirection = -WeaponMuzzle.forward;
                     playerController.AddForce(knockbackDirection * RocketJumpForce);
@@ -206,7 +235,6 @@ namespace FPS.Scripts.Game.Shared
             }
         }
 
-        // --- RELOAD LOGIC ---
         public void StartReloadAnimation()
         {
             // Reload only if full

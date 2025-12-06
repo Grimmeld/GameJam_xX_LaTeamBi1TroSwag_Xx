@@ -19,6 +19,8 @@ public class Health : MonoBehaviour
     {
         currentHealth -= damage;
         UpdateHUD();
+        
+        Debug.Log($"{name} took: {damage} dmg");
 
         if (currentHealth <= 0)
         {

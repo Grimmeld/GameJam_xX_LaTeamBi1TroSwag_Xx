@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2621180940295398749}
   - component: {fileID: 1614885628132411397}
   - component: {fileID: 2269946397567420568}
-  - component: {fileID: 1285477424173312951}
   - component: {fileID: 6689288625246711182}
   m_Layer: 3
   m_Name: Model
@@ -818,28 +817,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6800662701770763992}
   m_Mesh: {fileID: 0}
---- !u!64 &1285477424173312951
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6800662701770763992}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!114 &6689288625246711182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -866,6 +843,7 @@ GameObject:
   - component: {fileID: 9130212531942541561}
   - component: {fileID: 822732416028151538}
   - component: {fileID: 4462162298554095299}
+  - component: {fileID: 9114337172149299924}
   m_Layer: 3
   m_Name: Enemy
   m_TagString: Untagged
@@ -944,3 +922,26 @@ MonoBehaviour:
   TimeBetweenAttacks: 1.5
   AttackColor: {r: 1, g: 0, b: 0, a: 1}
   EnemyRenderer: {fileID: 1614885628132411397}
+--- !u!136 &9114337172149299924
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127321828052714713}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.8, z: 0}
