@@ -286,21 +286,12 @@ namespace Unity.FPS.Gameplay
             if (m_WeaponSwitchState == WeaponSwitchState.Up)
             {
                 WeaponController activeWeapon = GetActiveWeapon();
-                if (IsAiming && activeWeapon)
-                {
-                    m_WeaponMainLocalPosition = Vector3.Lerp(m_WeaponMainLocalPosition,
-                        AimingWeaponPosition.localPosition + activeWeapon.AimOffset,
-                        AimingAnimationSpeed * Time.deltaTime);
-                    SetFov(Mathf.Lerp(m_PlayerCharacterController.PlayerCamera.fieldOfView,
-                        activeWeapon.AimZoomRatio * DefaultFov, AimingAnimationSpeed * Time.deltaTime));
-                }
-                else
-                {
+                
                     m_WeaponMainLocalPosition = Vector3.Lerp(m_WeaponMainLocalPosition,
                         DefaultWeaponPosition.localPosition, AimingAnimationSpeed * Time.deltaTime);
                     SetFov(Mathf.Lerp(m_PlayerCharacterController.PlayerCamera.fieldOfView, DefaultFov,
                         AimingAnimationSpeed * Time.deltaTime));
-                }
+                
             }
         }
 
@@ -551,7 +542,7 @@ namespace Unity.FPS.Gameplay
 
         void OnWeaponSwitched(WeaponController newWeapon)
         {
-            if (newWeapon != null)
+            if (newWeapon)
             {
                 newWeapon.ShowWeapon(true);
             }

@@ -1,331 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Unity.FPS.Gameplay;
 
 namespace Unity.FPS.Game
 {
-    public enum WeaponShootType
-    {
-        Manual,
-        Automatic,
-        Charge,
-    }
-
-    [System.Serializable]
-    public struct CrosshairData
-    {
-        [Tooltip("The image that will be used for this weapon's crosshair")]
-        public Sprite CrosshairSprite;
-
-        [Tooltip("The size of the crosshair image")]
-        public int CrosshairSize;
-
-        [Tooltip("The color of the crosshair image")]
-        public Color CrosshairColor;
-    }
-
     [RequireComponent(typeof(AudioSource))]
     public class WeaponController : MonoBehaviour
     {
-        [Header("Information")] [Tooltip("The name that will be displayed in the UI for this weapon")]
-        public string WeaponName;
+        [Header("Primary Fire (Single Shot)")]
+        [Tooltip("Max distance for damage")]
+        public float WeaponRange = 15f;
+        
+        [Tooltip("Cone angle in degrees")]
+        [Range(0, 90)] public float ConeAngle = 30f;
+        
+        [Tooltip("Base damage per shell")]
+        public float DamagePerShell = 50f; 
+        
+        [Tooltip("Minimum damage at range per shell")]
+        public float MinDamagePerShell = 5f;
 
-        [Tooltip("The image that will be displayed in the UI for this weapon")]
-        public Sprite WeaponIcon;
+        [Header("Secondary Fire (Rocket Jump)")]
+        [Tooltip("Force applied to the player on Right Click")]
+        public float RocketJumpForce = 30f;
+        [Tooltip("Cooldown in seconds for the rocket jump")]
+        public float RocketJumpCooldown = 1.5f;
 
-        [Tooltip("Default data for the crosshair")]
-        public CrosshairData CrosshairDataDefault;
+        [Header("Integration Stats")]
+        public float ReloadDuration = 2f;
+        public float RecoilForce = 4f; 
+        [Tooltip("Delay between the two shots (Fire Rate)")]
+        public float DelayBetweenShots = 0.2f; // Nouveau paramètre exposé pour régler la vitesse entre les 2 tirs
 
-        [Tooltip("Data for the crosshair when targeting an enemy")]
-        public CrosshairData CrosshairDataTargetInSight;
-
-        [Header("Internal References")]
-        [Tooltip("The root object for the weapon, this is what will be deactivated when the weapon isn't active")]
+        [Header("References")]
         public GameObject WeaponRoot;
-
-        [Tooltip("Tip of the weapon, where the projectiles are shot")]
         public Transform WeaponMuzzle;
-
-        [Header("Shoot Parameters")] [Tooltip("The type of weapon wil affect how it shoots")]
-        public WeaponShootType ShootType;
-
-        //[Tooltip("The projectile prefab")] public ProjectileBase ProjectilePrefab;
-
-        [Tooltip("Minimum duration between two shots")]
-        public float DelayBetweenShots = 0.5f;
-
-        [Tooltip("Angle for the cone in which the bullets will be shot randomly (0 means no spread at all)")]
-        public float BulletSpreadAngle = 0f;
-
-        [Tooltip("Amount of bullets per shot")]
-        public int BulletsPerShot = 1;
-
-        [Tooltip("Force that will push back the weapon after each shot")] [Range(0f, 2f)]
-        public float RecoilForce = 1;
-
-        [Tooltip("Ratio of the default FOV that this weapon applies while aiming")] [Range(0f, 1f)]
-        public float AimZoomRatio = 1f;
-
-        [Tooltip("Translation to apply to weapon arm when aiming with this weapon")]
-        public Vector3 AimOffset;
-
-        [Header("Ammo Parameters")]
-        [Tooltip("Should the player manually reload")]
-        public bool AutomaticReload = true;
-        [Tooltip("Has physical clip on the weapon and ammo shells are ejected when firing")]
-        public bool HasPhysicalBullets = false;
-        [Tooltip("Number of bullets in a clip")]
-        public int ClipSize = 30;
-        [Tooltip("Bullet Shell Casing")]
-        public GameObject ShellCasing;
-        [Tooltip("Weapon Ejection Port for physical ammo")]
-        public Transform EjectionPort;
-        [Tooltip("Force applied on the shell")]
-        [Range(0.0f, 5.0f)] public float ShellCasingEjectionForce = 2.0f;
-        [Tooltip("Maximum number of shell that can be spawned before reuse")]
-        [Range(1, 30)] public int ShellPoolSize = 1;
-        [Tooltip("Amount of ammo reloaded per second")]
-        public float AmmoReloadRate = 1f;
-
-        [Tooltip("Delay after the last shot before starting to reload")]
-        public float AmmoReloadDelay = 2f;
-
-        [Tooltip("Maximum amount of ammo in the gun")]
-        public int MaxAmmo = 8;
-
-        [Header("Charging parameters (charging weapons only)")]
-        [Tooltip("Trigger a shot when maximum charge is reached")]
-        public bool AutomaticReleaseOnCharged;
-
-        [Tooltip("Duration to reach maximum charge")]
-        public float MaxChargeDuration = 2f;
-
-        [Tooltip("Initial ammo used when starting to charge")]
-        public float AmmoUsedOnStartCharge = 1f;
-
-        [Tooltip("Additional ammo used when charge reaches its maximum")]
-        public float AmmoUsageRateWhileCharging = 1f;
-
-        [Header("Audio & Visual")] 
-        [Tooltip("Optional weapon animator for OnShoot animations")]
         public Animator WeaponAnimator;
-
-        [Tooltip("Prefab of the muzzle flash")]
+        public LayerMask HitMask;
         public GameObject MuzzleFlashPrefab;
 
-        [Tooltip("Unparent the muzzle flash instance on spawn")]
-        public bool UnparentMuzzleFlash;
-
-        [Tooltip("sound played when shooting")]
+        [Header("Audio")]
         public AudioClip ShootSfx;
-
-        [Tooltip("Sound played when changing to this weapon")]
+        public AudioClip RocketJumpSfx; 
         public AudioClip ChangeWeaponSfx;
-
-        [Tooltip("Continuous Shooting Sound")] public bool UseContinuousShootSound = false;
-        public AudioClip ContinuousShootStartSfx;
-        public AudioClip ContinuousShootLoopSfx;
-        public AudioClip ContinuousShootEndSfx;
-        AudioSource m_ContinuousShootAudioSource = null;
-        bool m_WantsToShoot = false;
-
-        public UnityAction OnShoot;
-        public event Action OnShootProcessed;
-
-        int m_CarriedPhysicalBullets;
-        float m_CurrentAmmo;
-        float m_LastTimeShot = Mathf.NegativeInfinity;
-        public float LastChargeTriggerTimestamp { get; private set; }
-        Vector3 m_LastMuzzlePosition;
+        public AudioClip ReloadSfx;
+        public AudioClip DryFireSfx;
 
         public GameObject Owner { get; set; }
         public GameObject SourcePrefab { get; set; }
-        public bool IsCharging { get; private set; }
-        public float CurrentAmmoRatio { get; private set; }
-        public bool IsWeaponActive { get; private set; }
-        public bool IsCooling { get; private set; }
-        public float CurrentCharge { get; private set; }
-        public Vector3 MuzzleWorldVelocity { get; private set; }
+        public bool IsCharging { get; private set; } = false;
+        public bool IsReloading { get; private set; } = false;
+        public bool AutomaticReload { get; private set; } = false;
+        public float CurrentAmmoRatio => (float)m_CurrentAmmo / m_MaxAmmo;
 
-        public float GetAmmoNeededToShoot() =>
-            (ShootType != WeaponShootType.Charge ? 1f : Mathf.Max(1f, AmmoUsedOnStartCharge)) /
-            (MaxAmmo * BulletsPerShot);
+        // --- Internal State ---
+        private int m_CurrentAmmo;
+        private int m_MaxAmmo = 2;
+        private float m_LastTimeShot;
+        private float m_LastRocketJumpTime;
+        private AudioSource m_AudioSource;
 
-        public int GetCarriedPhysicalBullets() => m_CarriedPhysicalBullets;
-        public int GetCurrentAmmo() => Mathf.FloorToInt(m_CurrentAmmo);
-
-        AudioSource m_ShootAudioSource;
-
-        public bool IsReloading { get; private set; }
-
-        const string k_AnimAttackParameter = "Attack";
-
-        private Queue<Rigidbody> m_PhysicalAmmoPool;
+        public Action OnShoot;
 
         void Awake()
         {
-            m_CurrentAmmo = MaxAmmo;
-            m_CarriedPhysicalBullets = HasPhysicalBullets ? ClipSize : 0;
-            m_LastMuzzlePosition = WeaponMuzzle.position;
-
-            m_ShootAudioSource = GetComponent<AudioSource>();
-            //DebugUtility.HandleErrorIfNullGetComponent<AudioSource, WeaponController>(m_ShootAudioSource, this,
-                //gameObject);
-
-            if (UseContinuousShootSound)
-            {
-                m_ContinuousShootAudioSource = gameObject.AddComponent<AudioSource>();
-                m_ContinuousShootAudioSource.playOnAwake = false;
-                m_ContinuousShootAudioSource.clip = ContinuousShootLoopSfx;
-                //m_ContinuousShootAudioSource.outputAudioMixerGroup =
-                    //AudioUtility.GetAudioGroup(AudioUtility.AudioGroups.WeaponShoot);
-                //m_ContinuousShootAudioSource.loop = true;
-            }
-
-            if (HasPhysicalBullets)
-            {
-                m_PhysicalAmmoPool = new Queue<Rigidbody>(ShellPoolSize);
-
-                for (int i = 0; i < ShellPoolSize; i++)
-                {
-                    GameObject shell = Instantiate(ShellCasing, transform);
-                    shell.SetActive(false);
-                    m_PhysicalAmmoPool.Enqueue(shell.GetComponent<Rigidbody>());
-                }
-            }
-        }
-
-        public void AddCarriablePhysicalBullets(int count) => m_CarriedPhysicalBullets = Mathf.Max(m_CarriedPhysicalBullets + count, MaxAmmo);
-
-        void ShootShell()
-        {
-            Rigidbody nextShell = m_PhysicalAmmoPool.Dequeue();
-
-            nextShell.transform.position = EjectionPort.transform.position;
-            nextShell.transform.rotation = EjectionPort.transform.rotation;
-            nextShell.gameObject.SetActive(true);
-            nextShell.transform.SetParent(null);
-            nextShell.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            nextShell.AddForce(nextShell.transform.up * ShellCasingEjectionForce, ForceMode.Impulse);
-
-            m_PhysicalAmmoPool.Enqueue(nextShell);
-        }
-
-        //void PlaySFX(AudioClip sfx) => AudioUtility.CreateSFX(sfx, transform.position, AudioUtility.AudioGroups.WeaponShoot, 0.0f);
-
-
-        void Reload()
-        {
-            if (m_CarriedPhysicalBullets > 0)
-            {
-                m_CurrentAmmo = Mathf.Min(m_CarriedPhysicalBullets, ClipSize);
-            }
-
-            IsReloading = false;
-        }
-
-        public void StartReloadAnimation()
-        {
-            if (m_CurrentAmmo < m_CarriedPhysicalBullets)
-            {
-                GetComponent<Animator>().SetTrigger("Reload");
-                IsReloading = true;
-            }
+            m_CurrentAmmo = m_MaxAmmo;
+            m_AudioSource = GetComponent<AudioSource>();
+            if (!m_AudioSource) m_AudioSource = gameObject.AddComponent<AudioSource>();
         }
 
         void Update()
         {
-            UpdateAmmo();
-            UpdateCharge();
-            UpdateContinuousShootSound();
-
-            if (Time.deltaTime > 0)
+            // Listen for Secondary Fire (Right Click)
+            if (IsWeaponActive && !IsReloading)
             {
-                MuzzleWorldVelocity = (WeaponMuzzle.position - m_LastMuzzlePosition) / Time.deltaTime;
-                m_LastMuzzlePosition = WeaponMuzzle.position;
-            }
-        }
-
-        void UpdateAmmo()
-        {
-            if (AutomaticReload && m_LastTimeShot + AmmoReloadDelay < Time.time && m_CurrentAmmo < MaxAmmo && !IsCharging)
-            {
-                // reloads weapon over time
-                m_CurrentAmmo += AmmoReloadRate * Time.deltaTime;
-
-                // limits ammo to max value
-                m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo, 0, MaxAmmo);
-
-                IsCooling = true;
-            }
-            else
-            {
-                IsCooling = false;
-            }
-
-            if (MaxAmmo == Mathf.Infinity)
-            {
-                CurrentAmmoRatio = 1f;
-            }
-            else
-            {
-                CurrentAmmoRatio = m_CurrentAmmo / MaxAmmo;
-            }
-        }
-
-        void UpdateCharge()
-        {
-            if (IsCharging)
-            {
-                if (CurrentCharge < 1f)
+                if (Input.GetButtonDown("FireSecondary")) 
                 {
-                    float chargeLeft = 1f - CurrentCharge;
-
-                    // Calculate how much charge ratio to add this frame
-                    float chargeAdded = 0f;
-                    if (MaxChargeDuration <= 0f)
-                    {
-                        chargeAdded = chargeLeft;
-                    }
-                    else
-                    {
-                        chargeAdded = (1f / MaxChargeDuration) * Time.deltaTime;
-                    }
-
-                    chargeAdded = Mathf.Clamp(chargeAdded, 0f, chargeLeft);
-
-                    // See if we can actually add this charge
-                    float ammoThisChargeWouldRequire = chargeAdded * AmmoUsageRateWhileCharging;
-                    if (ammoThisChargeWouldRequire <= m_CurrentAmmo)
-                    {
-                        // Use ammo based on charge added
-                        UseAmmo(ammoThisChargeWouldRequire);
-
-                        // set current charge ratio
-                        CurrentCharge = Mathf.Clamp01(CurrentCharge + chargeAdded);
-                    }
-                }
-            }
-        }
-
-        void UpdateContinuousShootSound()
-        {
-            if (UseContinuousShootSound)
-            {
-                if (m_WantsToShoot && m_CurrentAmmo >= 1f)
-                {
-                    if (!m_ContinuousShootAudioSource.isPlaying)
-                    {
-                        m_ShootAudioSource.PlayOneShot(ShootSfx);
-                        m_ShootAudioSource.PlayOneShot(ContinuousShootStartSfx);
-                        m_ContinuousShootAudioSource.Play();
-                    }
-                }
-                else if (m_ContinuousShootAudioSource.isPlaying)
-                {
-                    m_ShootAudioSource.PlayOneShot(ContinuousShootEndSfx);
-                    m_ContinuousShootAudioSource.Stop();
+                    TryRocketJump();
                 }
             }
         }
@@ -333,170 +86,146 @@ namespace Unity.FPS.Game
         public void ShowWeapon(bool show)
         {
             WeaponRoot.SetActive(show);
-
-            if (show && ChangeWeaponSfx)
-            {
-                m_ShootAudioSource.PlayOneShot(ChangeWeaponSfx);
-            }
-
-            IsWeaponActive = show;
+            if (show && ChangeWeaponSfx) m_AudioSource.PlayOneShot(ChangeWeaponSfx);
         }
 
-        public void UseAmmo(float amount)
-        {
-            m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo - amount, 0f, MaxAmmo);
-            m_CarriedPhysicalBullets -= Mathf.RoundToInt(amount);
-            m_CarriedPhysicalBullets = Mathf.Clamp(m_CarriedPhysicalBullets, 0, MaxAmmo);
-            m_LastTimeShot = Time.time;
-        }
+        public bool IsWeaponActive => WeaponRoot.activeInHierarchy;
 
+        // --- PRIMARY FIRE (Left Click) ---
         public bool HandleShootInputs(bool inputDown, bool inputHeld, bool inputUp)
         {
-            m_WantsToShoot = inputDown || inputHeld;
-            switch (ShootType)
-            {
-                case WeaponShootType.Manual:
-                    if (inputDown)
-                    {
-                        return TryShoot();
-                    }
-
-                    return false;
-
-                case WeaponShootType.Automatic:
-                    if (inputHeld)
-                    {
-                        return TryShoot();
-                    }
-
-                    return false;
-
-                case WeaponShootType.Charge:
-                    if (inputHeld)
-                    {
-                        TryBeginCharge();
-                    }
-
-                    // Check if we released charge or if the weapon shoot autmatically when it's fully charged
-                    if (inputUp || (AutomaticReleaseOnCharged && CurrentCharge >= 1f))
-                    {
-                        return TryReleaseCharge();
-                    }
-
-                    return false;
-
-                default:
-                    return false;
-            }
-        }
-
-        bool TryShoot()
-        {
-            if (m_CurrentAmmo >= 1f
-                && m_LastTimeShot + DelayBetweenShots < Time.time)
-            {
-                HandleShoot();
-                m_CurrentAmmo -= 1f;
-
-                return true;
-            }
-
+            if (inputDown) return TryShoot();
             return false;
         }
 
-        bool TryBeginCharge()
+        private bool TryShoot()
         {
-            if (!IsCharging
-                && m_CurrentAmmo >= AmmoUsedOnStartCharge
-                && Mathf.FloorToInt((m_CurrentAmmo - AmmoUsedOnStartCharge) * BulletsPerShot) > 0
-                && m_LastTimeShot + DelayBetweenShots < Time.time)
+            if (IsReloading || Time.time < m_LastTimeShot + DelayBetweenShots) return false;
+
+            if (m_CurrentAmmo > 0)
             {
-                UseAmmo(AmmoUsedOnStartCharge);
-
-                LastChargeTriggerTimestamp = Time.time;
-                IsCharging = true;
-
-                return true;
+                HandleShot();
+                return true; 
             }
-
-            return false;
+            else
+            {
+                if(DryFireSfx) m_AudioSource.PlayOneShot(DryFireSfx);
+                return false;
+            }
         }
 
-        bool TryReleaseCharge()
+        private void HandleShot()
         {
-            if (IsCharging)
-            {
-                HandleShoot();
-
-                CurrentCharge = 0f;
-                IsCharging = false;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        void HandleShoot()
-        {
-            int bulletsPerShotFinal = ShootType == WeaponShootType.Charge
-                ? Mathf.CeilToInt(CurrentCharge * BulletsPerShot)
-                : BulletsPerShot;
-
-            // spawn all bullets with random direction
-            for (int i = 0; i < bulletsPerShotFinal; i++)
-            {
-                Vector3 shotDirection = GetShotDirectionWithinSpread(WeaponMuzzle);
-                //ProjectileBase newProjectile = Instantiate(ProjectilePrefab, WeaponMuzzle.position,
-                //    Quaternion.LookRotation(shotDirection));
-                //newProjectile.Shoot(this);
-            }
-
-            // muzzle flash
-            if (MuzzleFlashPrefab != null)
-            {
-                GameObject muzzleFlashInstance = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position,
-                    WeaponMuzzle.rotation, WeaponMuzzle.transform);
-                // Unparent the muzzleFlashInstance
-                if (UnparentMuzzleFlash)
-                {
-                    muzzleFlashInstance.transform.SetParent(null);
-                }
-
-                Destroy(muzzleFlashInstance, 2f);
-            }
-
-            if (HasPhysicalBullets)
-            {
-                ShootShell();
-                m_CarriedPhysicalBullets--;
-            }
-
             m_LastTimeShot = Time.time;
 
-            // play shoot SFX
-            if (ShootSfx && !UseContinuousShootSound)
+
+            m_CurrentAmmo--; 
+
+            // Visuals
+            if (ShootSfx) m_AudioSource.PlayOneShot(ShootSfx);
+            if (WeaponAnimator) WeaponAnimator.SetTrigger("Fire"); // Assure-toi que ton Animator a bien une animation simple pour "Fire"
+            if (MuzzleFlashPrefab)
             {
-                m_ShootAudioSource.PlayOneShot(ShootSfx);
+                GameObject flash = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation, WeaponMuzzle);
+                Destroy(flash, 0.5f);
             }
 
-            // Trigger attack animation if there is any
-            if (WeaponAnimator)
-            {
-                WeaponAnimator.SetTrigger(k_AnimAttackParameter);
-            }
+            // Damage Logic
+            DetectAndDamage();
 
             OnShoot?.Invoke();
-            OnShootProcessed?.Invoke();
         }
 
-        public Vector3 GetShotDirectionWithinSpread(Transform shootTransform)
+        private void DetectAndDamage()
         {
-            float spreadAngleRatio = BulletSpreadAngle / 180f;
-            Vector3 spreadWorldDirection = Vector3.Slerp(shootTransform.forward, UnityEngine.Random.insideUnitSphere,
-                spreadAngleRatio);
+            // TODO use NonAllocVersion
+            Collider[] hits = Physics.OverlapSphere(WeaponMuzzle.position, WeaponRange, HitMask);
 
-            return spreadWorldDirection;
+            foreach (var hit in hits)
+            {
+                Transform target = hit.transform;
+                Vector3 dirToTarget = (target.position - WeaponMuzzle.position).normalized;
+
+                if (Vector3.Angle(WeaponMuzzle.forward, dirToTarget) < ConeAngle / 2)
+                {
+                    float dist = Vector3.Distance(WeaponMuzzle.position, target.position);
+                    if (!Physics.Raycast(WeaponMuzzle.position, dirToTarget, dist, ~HitMask))
+                    {
+                        // Calculate Damage
+                        // Simple calcul basé sur la distance, sans multiplicateur
+                        float totalDmg = Mathf.Lerp(DamagePerShell, MinDamagePerShell, dist / WeaponRange);
+
+                        // Use the health
+                        // target.SendMessage("TakeDamage", totalDmg, SendMessageOptions.DontRequireReceiver);
+                    }
+                }
+            }
+        }
+
+        // --- SECONDARY FIRE (Right Click - Rocket Jump) ---
+        private void TryRocketJump()
+        {
+            if (Time.time >= m_LastRocketJumpTime + RocketJumpCooldown)
+            {
+                m_LastRocketJumpTime = Time.time;
+                
+                AudioClip clipToPlay = RocketJumpSfx ? RocketJumpSfx : ShootSfx;
+                if(clipToPlay) m_AudioSource.PlayOneShot(clipToPlay);
+                
+                if (MuzzleFlashPrefab)
+                {
+                    GameObject flash = Instantiate(MuzzleFlashPrefab, WeaponMuzzle.position, WeaponMuzzle.rotation, WeaponMuzzle);
+                    Destroy(flash, 0.5f);
+                }
+
+                ApplyRocketJumpForce();
+                
+                OnShoot?.Invoke(); 
+            }
+        }
+
+        private void ApplyRocketJumpForce()
+        {
+            if (Owner)
+            {
+                PlayerCharacterController playerController = Owner.GetComponent<PlayerCharacterController>();
+                if (playerController)
+                {
+                    Vector3 knockbackDirection = -WeaponMuzzle.forward;
+                    playerController.AddForce(knockbackDirection * RocketJumpForce);
+                }
+            }
+        }
+
+        // --- RELOAD LOGIC ---
+        public void StartReloadAnimation()
+        {
+            // Reload only if full
+            if (!IsReloading && m_CurrentAmmo < m_MaxAmmo)
+            {
+                StartCoroutine(ReloadSequence());
+            }
+        }
+
+        private IEnumerator ReloadSequence()
+        {
+            IsReloading = true;
+            if (ReloadSfx) m_AudioSource.PlayOneShot(ReloadSfx);
+            if (WeaponAnimator) WeaponAnimator.SetTrigger("Reload");
+            yield return new WaitForSeconds(ReloadDuration);
+            m_CurrentAmmo = m_MaxAmmo;
+            IsReloading = false;
+        }
+
+        // --- DEBUG ---
+        private void OnDrawGizmosSelected()
+        {
+            if (!WeaponMuzzle) return;
+            
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(WeaponMuzzle.position, WeaponRange);
+            Gizmos.DrawRay(WeaponMuzzle.position, Quaternion.Euler(0, -ConeAngle/2, 0) * WeaponMuzzle.forward * WeaponRange);
+            Gizmos.DrawRay(WeaponMuzzle.position, Quaternion.Euler(0, ConeAngle/2, 0) * WeaponMuzzle.forward * WeaponRange);
         }
     }
 }
