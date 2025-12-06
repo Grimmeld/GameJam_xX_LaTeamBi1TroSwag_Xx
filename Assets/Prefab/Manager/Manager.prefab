@@ -84,7 +84,7 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1.5
     spatialBlend: 0
-    loop: 0
+    loop: 1
     playOnAwake: 1
     source: {fileID: 0}
   - nameMusic: Reload
@@ -244,6 +244,16 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1.5
     spatialBlend: 0
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - nameMusic: EnemyDeath
+    typeMusic: 0
+    clip: {fileID: 8300000, guid: 3be6bf443ae052744af6038928c3ad0a, type: 3}
+    mixer: {fileID: -7684813949880785991, guid: d22b1107d513dfa44ab6538cba202bc5, type: 2}
+    volume: 0.5
+    pitch: 1.5
+    spatialBlend: 1
     loop: 0
     playOnAwake: 0
     source: {fileID: 0}
