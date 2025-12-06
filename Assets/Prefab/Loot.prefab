@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1697737213320565527}
   - component: {fileID: 6093137189520231712}
   - component: {fileID: 1380594606184743269}
-  - component: {fileID: 6001456409231610446}
   m_Layer: 0
   m_Name: Loot
   m_TagString: Untagged
@@ -123,16 +122,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedRotation: 50
---- !u!114 &6001456409231610446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 419343205238260988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40a26ff190136e24c966daeefbcc2951, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bonusAmmo: 10

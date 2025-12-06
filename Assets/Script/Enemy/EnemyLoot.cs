@@ -4,24 +4,29 @@ using UnityEngine;
 
 public class EnemyLoot : MonoBehaviour
 {
-    [SerializeField] private GameObject loot; // faire une liste
-    
+    [Header("Set up")]
+    [SerializeField] private Vector3 offset;
+
+    [Header("Loot")]
+    [SerializeField] private List<GameObject> loots;
+
+    //[Header("Parametre apparition")]
+    //[SerializeField] private int minAmmo;
     // choisir le loot selon une liste
     // - Si pas beaucoup de munition > Loot munition
     // - Pareil pour la sante
 
-    private void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.E))
-        //{
-        //    Destroy(gameObject);
-        //}
-    }
-
     private void OnDestroy()
     {
-        if(loot != null)
-        Instantiate(loot, transform.position, transform.rotation);
+        if(loots.Count > 0)
+        {
+            int rand = Random.Range(0, loots.Count);
+            Vector3 position = transform.position + offset;
+            if (loots[rand] != null)
+            {
+                Instantiate(loots[rand], position, transform.rotation);
+            }
+        }
 
     }
 }

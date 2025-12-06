@@ -9,8 +9,11 @@ public class AmmoLoot : MonoBehaviour, IInteractable
     public void Interaction(PlayerCharacterController playerChar)
     {
         WeaponController weaponController = playerChar.GetComponentInChildren<WeaponController>();
-        weaponController.ammoStock += bonusAmmo;
-        weaponController.UpdateHUD();
+        if (weaponController != null)
+        {
+            weaponController.ammoStock += bonusAmmo;
+            weaponController.UpdateHUD();
+        }
 
         Destroy(gameObject);
     }
