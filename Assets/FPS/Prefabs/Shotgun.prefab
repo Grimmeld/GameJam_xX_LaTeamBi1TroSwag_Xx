@@ -806,10 +806,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   MuzzleFlashPrefab: {fileID: 1376696033527059834, guid: 88108968e5b7c5d4b8820ffca0d86646, type: 3}
-  ShootSfx: {fileID: 0}
-  RocketJumpSfx: {fileID: 0}
+  MuzzleFlashRocketJumpPrefab: {fileID: 1376696033527059834, guid: 04fdc26cf78081847ab5f93c3ea4ecd9, type: 3}
+  EnemyImpactVfx: {fileID: 616156031599255053, guid: 0d70354f61172184b881dda537c78495, type: 3}
+  ShootSfx: {fileID: 8300000, guid: 34f5b7267e82d004aba171ebc2731ec4, type: 3}
+  RocketJumpSfx: {fileID: 8300000, guid: e5f745b802a89e3409a2b05219914381, type: 3}
   ChangeWeaponSfx: {fileID: 0}
-  ReloadSfx: {fileID: 0}
+  ReloadSfx: {fileID: 8300000, guid: 7f0575658ec047946a262afffe61c73b, type: 3}
   DryFireSfx: {fileID: 0}
   ammoStock: 10
 --- !u!1001 &269866270382095451
@@ -822,23 +824,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.095
+      value: -0.067
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.172
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 2936706600639615088, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_LocalPosition.z
@@ -880,9 +882,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5629628356876269717, guid: b45236852af67cb4d8fab8591354a498, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5991053882459184910, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770904994456025910, guid: b45236852af67cb4d8fab8591354a498, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -59,7 +59,7 @@ namespace Unity.FPS.Game
                 //}
                 if (audioManager != null)
                 {
-                    StartCoroutine(audioManager.PlayMusicAndDelete(musicName, this.gameObject));
+                    StartCoroutine(audioManager.PlayOnActor(musicName, this.gameObject));
                 }
         }
 
