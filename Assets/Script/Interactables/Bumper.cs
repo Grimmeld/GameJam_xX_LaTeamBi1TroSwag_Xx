@@ -16,13 +16,20 @@ namespace Unity.FPS.Game
         public float ArcHeight = 2f;
 
         [Header("Audio & Visuals")]
-        public AudioClip BounceSfx;
+        //public AudioClip BounceSfx;
+        private AudioManager audioManager;
+        [SerializeField] private string musicName;
         
         // Throttling to avoid multiple triggers and spam player
         private float m_LastBounceTime;
         private float m_BounceCooldown = 0.5f;
 
-        private void OnTriggerEnter(Collider other)
+            private void Start()
+            {
+                audioManager = AudioManager.instance;
+            }
+
+            private void OnTriggerEnter(Collider other)
         {
             // Check if player, maybe check collision matrix
             if (other.TryGetComponent<PlayerCharacterController>(out var player) && TargetDestination)
@@ -45,11 +52,15 @@ namespace Unity.FPS.Game
             // Reset velocity to ensure no deviation
             player.AddForce(launchVelocity, true);
 
-            // Audio
-            if (BounceSfx && player.GetComponent<AudioSource>())
-            {
-                player.GetComponent<AudioSource>().PlayOneShot(BounceSfx);
-            }
+                // Audio
+                //if (BounceSfx && player.GetComponent<AudioSource>())
+                //{
+                //    player.GetComponent<AudioSource>().PlayOneShot(BounceSfx);
+                //}
+                if (audioManager != null)
+                {
+                    StartCoroutine(audioManager.PlayMusicAndDelete(musicName, this.gameObject));
+                }
         }
 
         /// <summary>

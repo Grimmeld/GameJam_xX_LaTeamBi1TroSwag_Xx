@@ -5,8 +5,15 @@ using UnityEngine.Audio;
 [System.Serializable]
 public class Sound
 {
+    public enum typeAudio
+    {
+        player,
+        other
+    }
 
     public string nameMusic;
+
+    public typeAudio typeMusic;
 
     public AudioClip clip;
     public AudioMixerGroup mixer;
