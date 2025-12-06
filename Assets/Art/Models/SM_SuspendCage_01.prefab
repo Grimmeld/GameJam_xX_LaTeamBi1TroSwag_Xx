@@ -49,17 +49,33 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3035608602465568333, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3035608602465568333, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 9994e243c86411047974664cfdb5d1af, type: 2}
+    - target: {fileID: -3035608602465568333, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 467f423b30150aa4ca598f6ae67e3f46, type: 2}
     - target: {fileID: 919132149155446097, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
       propertyPath: m_Name
       value: SM_SuspendCage_01
       objectReference: {fileID: 0}
     - target: {fileID: 6884197233264200275, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6884197233264200275, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 0999c2f26bda90d489010a9f32b0897d, type: 2}
+    - target: {fileID: 6884197233264200275, guid: f694f4cb01b3f4945b5f92f2e09a9cf0, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 467f423b30150aa4ca598f6ae67e3f46, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
