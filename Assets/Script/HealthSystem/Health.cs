@@ -1,3 +1,4 @@
+using Script.UI;
 using TMPro;
 using Unity.FPS.Gameplay;
 using UnityEngine;
@@ -43,7 +44,7 @@ public class Health : MonoBehaviour
 
     private void UpdateHUD()
     {
-        if (UIManager.Instance != null)
+        if (UIManager.Instance)
         {
             UIManager.Instance.UpdateHealthHUD(currentHealth, maxHealth);
         }

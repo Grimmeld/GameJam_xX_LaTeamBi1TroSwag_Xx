@@ -1,30 +1,33 @@
 using TMPro;
 using UnityEngine;
 
-public class UIManager : MonoBehaviour
+namespace Script.UI
 {
-    public static UIManager Instance;
-
-
-    [SerializeField] private TextMeshProUGUI currentTxt;
-    [SerializeField] private TextMeshProUGUI maxTxt;
-
-    private void Start()
+    public class UIManager : MonoBehaviour
     {
-        if (Instance != null)
+        public static UIManager Instance;
+
+
+        [SerializeField] private TextMeshProUGUI currentTxt;
+        [SerializeField] private TextMeshProUGUI maxTxt;
+
+        private void Start()
         {
-            return;
+            if (Instance)
+            {
+                return;
+            }
+            Instance = this;
         }
-        Instance = this;
+
+        public void UpdateHealthHUD(float current, float max)
+        {
+            if (currentTxt)
+                currentTxt.text = current.ToString();
+
+            if (maxTxt)
+                maxTxt.text = max.ToString();
+        }
+
     }
-
-    public void UpdateHealthHUD(float current, float max)
-    {
-        if (currentTxt != null)
-            currentTxt.text = current.ToString();
-
-        if (maxTxt != null)
-            maxTxt.text = max.ToString();
-    }
-
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FPS.Scripts.Gameplay.Managers;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Unity.FPS.Gameplay
@@ -6,14 +7,18 @@ namespace Unity.FPS.Gameplay
     [RequireComponent(typeof(CharacterController), typeof(PlayerInputHandler), typeof(AudioSource))]
     public class PlayerCharacterController : MonoBehaviour
     {
-        [Header("Wall Run Game Feel")]
-        [Tooltip("Field of View cible pendant le wall run")]
-        public float WallRunFOV = 75f; 
+        private const float k_JumpGroundingPreventionTime = 0.2f;
+        private const float k_GroundCheckDistanceInAir = 0.07f;
+
+        [Header("Wall Run Game Feel")] [Tooltip("Field of View cible pendant le wall run")]
+        public float WallRunFOV = 75f;
+
         [Tooltip("Durée de transition du FOV")]
         public float FOVTransitionDuration = 0.25f;
+
         [Tooltip("Temps de grâce pour sauter après avoir quitté le mur (Coyote Time)")]
         public float WallRunCoyoteTime = 0.2f;
-        
+
         [Header("References")] [Tooltip("Reference to the main camera used for the player")]
         public Camera PlayerCamera;
 
@@ -104,8 +109,7 @@ namespace Unity.FPS.Gameplay
         public float FallDamageAtMaxSpeed = 50f;
 
 
-        [Header("Wall Running")]
-        [Tooltip("Layers that count as runnable walls")]
+        [Header("Wall Running")] [Tooltip("Layers that count as runnable walls")]
         public LayerMask WallRunLayers;
 
         [Tooltip("Max distance to detect a wall on the side")]
@@ -121,7 +125,7 @@ namespace Unity.FPS.Gameplay
         public float WallRunSpeedMultiplier = 1.2f;
 
         [Tooltip("Force of the jump off the wall (Side, Up)")]
-        public Vector2 WallJumpForce = new Vector2(10f, 8f); // X = Side force, Y = Up force
+        public Vector2 WallJumpForce = new(10f, 8f); // X = Side force, Y = Up force
 
         [Tooltip("Camera tilt angle when wall running")]
         public float MaxAngleRoll = 15f;
@@ -137,6 +141,32 @@ namespace Unity.FPS.Gameplay
 
         [Tooltip("Angle minimum (en degrés) vers le haut pour activer le boost vertical")]
         public float WallRunLookUpThreshold = 15f;
+
+        private float m_CameraVerticalAngle;
+        private Vector3 m_CharacterVelocity;
+        private CharacterController m_Controller;
+
+        // Camera Tilt internal variable
+        private float m_CurrentCameraTilt;
+
+        private float m_DefaultFOV;
+
+        private float m_FootstepDistanceCounter;
+
+        //Actor m_Actor;
+        private Vector3 m_GroundNormal;
+
+        //Health m_Health;
+        private PlayerInputHandler m_InputHandler;
+        private float m_LastTimeJumped;
+        private Vector3 m_LastWallNormal;
+        private Vector3 m_LatestImpactSpeed;
+        private float m_TargetCharacterHeight;
+        private float m_TimeWallRunEnded;
+        private RaycastHit m_WallHitLeft;
+        private RaycastHit m_WallHitRight;
+
+        private PlayerWeaponsManager m_WeaponsManager;
         // ---------------------------------------------------------
 
         public UnityAction<bool> OnStanceChanged;
@@ -146,74 +176,46 @@ namespace Unity.FPS.Gameplay
         public bool HasJumpedThisFrame { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsCrouching { get; private set; }
-        
+
         // Wall Run Public Properties
         public bool IsWallRunning { get; private set; }
         public bool IsWallLeft { get; private set; }
         public bool IsWallRight { get; private set; }
 
-        float m_DefaultFOV;
-        float m_TimeWallRunEnded;
-        Vector3 m_LastWallNormal;
-        
         public float RotationMultiplier
         {
             get
             {
-                if (m_WeaponsManager.IsAiming)
-                {
-                    return AimingRotationMultiplier;
-                }
+                if (m_WeaponsManager.IsAiming) return AimingRotationMultiplier;
 
                 return 1f;
             }
         }
 
-        //Health m_Health;
-        PlayerInputHandler m_InputHandler;
-        CharacterController m_Controller;
-        PlayerWeaponsManager m_WeaponsManager;
-        //Actor m_Actor;
-        Vector3 m_GroundNormal;
-        Vector3 m_CharacterVelocity;
-        Vector3 m_LatestImpactSpeed;
-        float m_LastTimeJumped = 0f;
-        float m_CameraVerticalAngle = 0f;
-        float m_FootstepDistanceCounter;
-        float m_TargetCharacterHeight;
-        
-        // Camera Tilt internal variable
-        float m_CurrentCameraTilt = 0f;
-        RaycastHit m_WallHitLeft;
-        RaycastHit m_WallHitRight;
-
-        const float k_JumpGroundingPreventionTime = 0.2f;
-        const float k_GroundCheckDistanceInAir = 0.07f;
-
-        void Awake()
+        private void Awake()
         {
             //ActorsManager actorsManager = FindFirstObjectByType<ActorsManager>();
             //if (actorsManager != null)
             //    actorsManager.SetPlayer(gameObject);
         }
 
-        void Start()
+        private void Start()
         {
             // fetch components on the same gameObject
             m_Controller = GetComponent<CharacterController>();
             m_InputHandler = GetComponent<PlayerInputHandler>();
             m_WeaponsManager = GetComponent<PlayerWeaponsManager>();
-            
+
             m_Controller.enableOverlapRecovery = true;
 
             // force the crouch state to false when starting
             SetCrouchingState(false, true);
             UpdateCharacterHeight(true);
-            
+
             m_DefaultFOV = PlayerCamera.fieldOfView;
         }
 
-        void Update()
+        private void Update()
         {
             // check for Y kill
             if (!IsDead && transform.position.y < KillHeight)
@@ -223,9 +225,9 @@ namespace Unity.FPS.Gameplay
 
             HasJumpedThisFrame = false;
 
-            bool wasGrounded = IsGrounded;
+            var wasGrounded = IsGrounded;
             GroundCheck();
-            
+
             // Wall Run Detection
             CheckForWall();
             ManageWallRunState();
@@ -237,12 +239,12 @@ namespace Unity.FPS.Gameplay
                 IsWallRunning = false;
 
                 // Fall damage
-                float fallSpeed = -Mathf.Min(CharacterVelocity.y, m_LatestImpactSpeed.y);
-                float fallSpeedRatio = (fallSpeed - MinSpeedForFallDamage) /
-                                       (MaxSpeedForFallDamage - MinSpeedForFallDamage);
+                var fallSpeed = -Mathf.Min(CharacterVelocity.y, m_LatestImpactSpeed.y);
+                var fallSpeedRatio = (fallSpeed - MinSpeedForFallDamage) /
+                                     (MaxSpeedForFallDamage - MinSpeedForFallDamage);
                 if (RecievesFallDamage && fallSpeedRatio > 0f)
                 {
-                    float dmgFromFall = Mathf.Lerp(FallDamageAtMinSpeed, FallDamageAtMaxSpeed, fallSpeedRatio);
+                    var dmgFromFall = Mathf.Lerp(FallDamageAtMinSpeed, FallDamageAtMaxSpeed, fallSpeedRatio);
                     //m_Health.TakeDamage(dmgFromFall, null);
 
                     // fall damage SFX
@@ -256,17 +258,14 @@ namespace Unity.FPS.Gameplay
             }
 
             // crouching
-            if (m_InputHandler.GetCrouchInputDown())
-            {
-                SetCrouchingState(!IsCrouching, false);
-            }
+            if (m_InputHandler.GetCrouchInputDown()) SetCrouchingState(!IsCrouching, false);
 
             UpdateCharacterHeight(false);
 
             HandleCharacterMovement();
         }
 
-        void OnDie()
+        private void OnDie()
         {
             IsDead = true;
 
@@ -276,37 +275,31 @@ namespace Unity.FPS.Gameplay
             //EventManager.Broadcast(Events.PlayerDeathEvent);
         }
 
-        void CheckForWall()
+        private void CheckForWall()
         {
             IsWallLeft = false;
             IsWallRight = false;
 
             // Raycast Right
-            if (Physics.Raycast(transform.position, transform.right, out m_WallHitRight, WallMaxDistance, WallRunLayers))
-            {
+            if (Physics.Raycast(transform.position, transform.right, out m_WallHitRight, WallMaxDistance,
+                    WallRunLayers))
                 if (Mathf.Abs(Vector3.Dot(m_WallHitRight.normal, Vector3.up)) < NormalizedAngleThreshold)
-                {
                     IsWallRight = true;
-                }
-            }
 
             // Raycast Left
-            if (Physics.Raycast(transform.position, -transform.right, out m_WallHitLeft, WallMaxDistance, WallRunLayers))
-            {
+            if (Physics.Raycast(transform.position, -transform.right, out m_WallHitLeft, WallMaxDistance,
+                    WallRunLayers))
                 if (Mathf.Abs(Vector3.Dot(m_WallHitLeft.normal, Vector3.up)) < NormalizedAngleThreshold)
-                {
                     IsWallLeft = true;
-                }
-            }
         }
 
-        void ManageWallRunState()
+        private void ManageWallRunState()
         {
             // Can only wall run if NOT grounded and Moving Forward
-            bool isMovingForward = m_InputHandler.GetMoveInput().z > 0.1f;
-            
+            var isMovingForward = m_InputHandler.GetMoveInput().z > 0.1f;
+
             // Height Check: Cast a ray down to make sure we are high enough off the ground
-            bool isHighEnough = !Physics.Raycast(transform.position, Vector3.down, MinWallRunHeight, GroundCheckLayers);
+            var isHighEnough = !Physics.Raycast(transform.position, Vector3.down, MinWallRunHeight, GroundCheckLayers);
 
             if ((IsWallLeft || IsWallRight) && isMovingForward && isHighEnough && !IsGrounded)
             {
@@ -320,24 +313,21 @@ namespace Unity.FPS.Gameplay
             }
         }
 
-        void StartWallRun()
+        private void StartWallRun()
         {
             IsWallRunning = true;
-            
+
             // Optional: Reset vertical velocity slightly so player doesn't slide down immediately
-            if (CharacterVelocity.y < 0)
-            {
-                CharacterVelocity = new Vector3(CharacterVelocity.x, 0f, CharacterVelocity.z);
-            }
+            if (CharacterVelocity.y < 0) CharacterVelocity = new Vector3(CharacterVelocity.x, 0f, CharacterVelocity.z);
         }
 
-        void StopWallRun()
+        private void StopWallRun()
         {
             if (IsWallRunning)
             {
                 // save time and normal for coyotte jump
                 m_TimeWallRunEnded = Time.time;
-                
+
                 // Save wall normal for later use
                 if (IsWallLeft) m_LastWallNormal = m_WallHitLeft.normal;
                 else if (IsWallRight) m_LastWallNormal = m_WallHitRight.normal;
@@ -347,11 +337,11 @@ namespace Unity.FPS.Gameplay
             IsWallRunning = false;
         }
 
-        void GroundCheck()
+        private void GroundCheck()
         {
             // Make sure that the ground check distance while already in air is very small, to prevent suddenly snapping to ground
-            float chosenGroundCheckDistance =
-                IsGrounded ? (m_Controller.skinWidth + GroundCheckDistance) : k_GroundCheckDistanceInAir;
+            var chosenGroundCheckDistance =
+                IsGrounded ? m_Controller.skinWidth + GroundCheckDistance : k_GroundCheckDistanceInAir;
 
             // reset values before the ground check
             IsGrounded = false;
@@ -359,11 +349,10 @@ namespace Unity.FPS.Gameplay
 
             // only try to detect ground if it's been a short amount of time since last jump; otherwise we may snap to the ground instantly after we try jumping
             if (Time.time >= m_LastTimeJumped + k_JumpGroundingPreventionTime)
-            {
                 // if we're grounded, collect info about the ground normal with a downward capsule cast representing our character capsule
                 if (Physics.CapsuleCast(GetCapsuleBottomHemisphere(), GetCapsuleTopHemisphere(m_Controller.height),
-                    m_Controller.radius, Vector3.down, out RaycastHit hit, chosenGroundCheckDistance, GroundCheckLayers,
-                    QueryTriggerInteraction.Ignore))
+                        m_Controller.radius, Vector3.down, out var hit, chosenGroundCheckDistance, GroundCheckLayers,
+                        QueryTriggerInteraction.Ignore))
                 {
                     // storing the upward direction for the surface found
                     m_GroundNormal = hit.normal;
@@ -376,22 +365,18 @@ namespace Unity.FPS.Gameplay
                         IsGrounded = true;
 
                         // handle snapping to the ground
-                        if (hit.distance > m_Controller.skinWidth)
-                        {
-                            m_Controller.Move(Vector3.down * hit.distance);
-                        }
+                        if (hit.distance > m_Controller.skinWidth) m_Controller.Move(Vector3.down * hit.distance);
                     }
                 }
-            }
         }
 
-        void HandleCharacterMovement()
+        private void HandleCharacterMovement()
         {
             // horizontal character rotation
             {
                 // rotate the transform with the input speed around its local Y axis
                 transform.Rotate(
-                    new Vector3(0f, (m_InputHandler.GetLookInputsHorizontal() * RotationSpeed * RotationMultiplier),
+                    new Vector3(0f, m_InputHandler.GetLookInputsHorizontal() * RotationSpeed * RotationMultiplier,
                         0f), Space.Self);
             }
 
@@ -404,44 +389,43 @@ namespace Unity.FPS.Gameplay
                 m_CameraVerticalAngle = Mathf.Clamp(m_CameraVerticalAngle, -89f, 89f);
 
                 // --- CAMERA TILT CALCULATION ---
-                float targetTilt = 0f;
-                float targetFOV = m_DefaultFOV;
+                var targetTilt = 0f;
+                var targetFOV = m_DefaultFOV;
 
                 if (IsWallRunning)
                 {
                     if (IsWallLeft) targetTilt = -MaxAngleRoll;
                     else if (IsWallRight) targetTilt = MaxAngleRoll;
-                    
+
                     targetFOV = WallRunFOV; // speed fov
                 }
 
                 // Smooth Tilt
-                m_CurrentCameraTilt = Mathf.Lerp(m_CurrentCameraTilt, targetTilt, CamTransitionDuration * Time.deltaTime);
-                
+                m_CurrentCameraTilt =
+                    Mathf.Lerp(m_CurrentCameraTilt, targetTilt, CamTransitionDuration * Time.deltaTime);
+
                 // Smooth FOV (Game Feel)
-                PlayerCamera.fieldOfView = Mathf.Lerp(PlayerCamera.fieldOfView, targetFOV, Time.deltaTime / FOVTransitionDuration);
+                PlayerCamera.fieldOfView = Mathf.Lerp(PlayerCamera.fieldOfView, targetFOV,
+                    Time.deltaTime / FOVTransitionDuration);
 
                 PlayerCamera.transform.localEulerAngles = new Vector3(m_CameraVerticalAngle, 0, m_CurrentCameraTilt);
             }
 
             // character movement handling
-            bool isSprinting = m_InputHandler.GetSprintInputHeld();
+            var isSprinting = m_InputHandler.GetSprintInputHeld();
             {
-                if (isSprinting)
-                {
-                    isSprinting = SetCrouchingState(false, false);
-                }
+                if (isSprinting) isSprinting = SetCrouchingState(false, false);
 
-                float speedModifier = isSprinting ? SprintSpeedModifier : 1f;
+                var speedModifier = isSprinting ? SprintSpeedModifier : 1f;
 
                 // converts move input to a worldspace vector based on our character's transform orientation
-                Vector3 worldspaceMoveInput = transform.TransformVector(m_InputHandler.GetMoveInput());
+                var worldspaceMoveInput = transform.TransformVector(m_InputHandler.GetMoveInput());
 
                 // handle grounded movement
                 if (IsGrounded)
                 {
                     // calculate the desired velocity from inputs, max speed, and current slope
-                    Vector3 targetVelocity = worldspaceMoveInput * (MaxSpeedOnGround * speedModifier);
+                    var targetVelocity = worldspaceMoveInput * (MaxSpeedOnGround * speedModifier);
                     // reduce speed if crouching by crouch speed ratio
                     if (IsCrouching)
                         targetVelocity *= MaxSpeedCrouchedRatio;
@@ -454,7 +438,6 @@ namespace Unity.FPS.Gameplay
 
                     // jumping
                     if (IsGrounded && m_InputHandler.GetJumpInputDown())
-                    {
                         // force the crouch state to false
                         if (SetCrouchingState(false, false))
                         {
@@ -475,11 +458,10 @@ namespace Unity.FPS.Gameplay
                             IsGrounded = false;
                             m_GroundNormal = Vector3.up;
                         }
-                    }
 
                     // footsteps sound
-                    float chosenFootstepSfxFrequency =
-                        (isSprinting ? FootstepSfxFrequencyWhileSprinting : FootstepSfxFrequency);
+                    var chosenFootstepSfxFrequency =
+                        isSprinting ? FootstepSfxFrequencyWhileSprinting : FootstepSfxFrequency;
                     if (m_FootstepDistanceCounter >= 1f / chosenFootstepSfxFrequency)
                     {
                         m_FootstepDistanceCounter = 0f;
@@ -492,32 +474,29 @@ namespace Unity.FPS.Gameplay
                 else if (IsWallRunning)
                 {
                     // Calculate wall forward direction
-                    Vector3 wallNormal = IsWallRight ? m_WallHitRight.normal : m_WallHitLeft.normal;
-                    Vector3 wallForward = Vector3.Cross(wallNormal, Vector3.up);
+                    var wallNormal = IsWallRight ? m_WallHitRight.normal : m_WallHitLeft.normal;
+                    var wallForward = Vector3.Cross(wallNormal, Vector3.up);
 
                     // Determine direction based on player facing
                     if ((transform.forward - wallForward).magnitude > (transform.forward - -wallForward).magnitude)
-                    {
                         wallForward = -wallForward;
-                    }
 
                     // Apply Wall Velocity
-                    Vector3 wallRunVelocity = wallForward * (MaxSpeedInAir * WallRunSpeedMultiplier);
-                    
+                    var wallRunVelocity = wallForward * (MaxSpeedInAir * WallRunSpeedMultiplier);
+
                     // Smoothly blend horizontal velocity
-                    CharacterVelocity = Vector3.Lerp(CharacterVelocity, wallRunVelocity, MovementSharpnessOnGround * Time.deltaTime);
+                    CharacterVelocity = Vector3.Lerp(CharacterVelocity, wallRunVelocity,
+                        MovementSharpnessOnGround * Time.deltaTime);
 
                     // Handle Wall Gravity (Much lighter)
                     CharacterVelocity += Vector3.down * (WallGravityDownForce * Time.deltaTime);
-                    
+
                     // Add a small force pushing player INTO the wall to stick
                     CharacterVelocity += -wallNormal * (1f * Time.deltaTime);
 
                     // Wall Jump
                     if (m_InputHandler.GetJumpInputDown())
-                    {
                         PerformWallJump(IsWallRight ? m_WallHitRight.normal : m_WallHitLeft.normal);
-                    }
                 }
                 else if (Time.time < m_TimeWallRunEnded + WallRunCoyoteTime && m_InputHandler.GetJumpInputDown())
                 {
@@ -529,33 +508,27 @@ namespace Unity.FPS.Gameplay
                     CharacterVelocity += worldspaceMoveInput * (AccelerationSpeedInAir * Time.deltaTime);
 
                     // 2. Momentum Logic
-                    float verticalVelocity = CharacterVelocity.y;
-                    Vector3 horizontalVelocity = Vector3.ProjectOnPlane(CharacterVelocity, Vector3.up);
-                    float maxAirSpeed = MaxSpeedInAir * speedModifier;
+                    var verticalVelocity = CharacterVelocity.y;
+                    var horizontalVelocity = Vector3.ProjectOnPlane(CharacterVelocity, Vector3.up);
+                    var maxAirSpeed = MaxSpeedInAir * speedModifier;
 
                     if (horizontalVelocity.magnitude > maxAirSpeed)
-                    {
-                        
-                        horizontalVelocity = Vector3.Lerp(horizontalVelocity, horizontalVelocity.normalized * maxAirSpeed, Time.deltaTime * 0.5f);
-                    }
+                        horizontalVelocity = Vector3.Lerp(horizontalVelocity,
+                            horizontalVelocity.normalized * maxAirSpeed, Time.deltaTime * 0.5f);
                     else
-                    {
-                        
                         horizontalVelocity = Vector3.ClampMagnitude(horizontalVelocity, maxAirSpeed);
-                    }
 
-                    CharacterVelocity = horizontalVelocity + (Vector3.up * verticalVelocity);
+                    CharacterVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
                     // 3. Apply Gravity
                     CharacterVelocity += Vector3.down * (GravityDownForce * Time.deltaTime);
-                    
                 }
             }
 
             void PerformWallJump(Vector3 wallNormal)
             {
                 // Calculate jump direction: Up + Away from wall (Base Jump)
-                Vector3 jumpDir = (wallNormal * WallJumpForce.x) + (Vector3.up * WallJumpForce.y);
+                var jumpDir = wallNormal * WallJumpForce.x + Vector3.up * WallJumpForce.y;
 
                 // UPWARD DASH check
                 if (m_CameraVerticalAngle < -WallRunLookUpThreshold)
@@ -574,20 +547,20 @@ namespace Unity.FPS.Gameplay
                 m_LastTimeJumped = Time.time;
                 HasJumpedThisFrame = true;
                 IsWallRunning = false; // Detach
-            
-                m_TimeWallRunEnded = 0f; 
+
+                m_TimeWallRunEnded = 0f;
             }
-            
+
             // apply the final calculated velocity value as a character movement
-            Vector3 capsuleBottomBeforeMove = GetCapsuleBottomHemisphere();
-            Vector3 capsuleTopBeforeMove = GetCapsuleTopHemisphere(m_Controller.height);
+            var capsuleBottomBeforeMove = GetCapsuleBottomHemisphere();
+            var capsuleTopBeforeMove = GetCapsuleTopHemisphere(m_Controller.height);
             m_Controller.Move(CharacterVelocity * Time.deltaTime);
 
             // detect obstructions to adjust velocity accordingly
             m_LatestImpactSpeed = Vector3.zero;
             if (Physics.CapsuleCast(capsuleBottomBeforeMove, capsuleTopBeforeMove, m_Controller.radius,
-                CharacterVelocity.normalized, out RaycastHit hit, CharacterVelocity.magnitude * Time.deltaTime, -1,
-                QueryTriggerInteraction.Ignore))
+                    CharacterVelocity.normalized, out var hit, CharacterVelocity.magnitude * Time.deltaTime, -1,
+                    QueryTriggerInteraction.Ignore))
             {
                 m_LatestImpactSpeed = CharacterVelocity;
 
@@ -596,31 +569,31 @@ namespace Unity.FPS.Gameplay
         }
 
         // Returns true if the slope angle represented by the given normal is under the slope angle limit of the character controller
-        bool IsNormalUnderSlopeLimit(Vector3 normal)
+        private bool IsNormalUnderSlopeLimit(Vector3 normal)
         {
             return Vector3.Angle(transform.up, normal) <= m_Controller.slopeLimit;
         }
 
         // Gets the center point of the bottom hemisphere of the character controller capsule    
-        Vector3 GetCapsuleBottomHemisphere()
+        private Vector3 GetCapsuleBottomHemisphere()
         {
-            return transform.position + (transform.up * m_Controller.radius);
+            return transform.position + transform.up * m_Controller.radius;
         }
 
         // Gets the center point of the top hemisphere of the character controller capsule    
-        Vector3 GetCapsuleTopHemisphere(float atHeight)
+        private Vector3 GetCapsuleTopHemisphere(float atHeight)
         {
-            return transform.position + (transform.up * (atHeight - m_Controller.radius));
+            return transform.position + transform.up * (atHeight - m_Controller.radius);
         }
 
         // Gets a reoriented direction that is tangent to a given slope
         public Vector3 GetDirectionReorientedOnSlope(Vector3 direction, Vector3 slopeNormal)
         {
-            Vector3 directionRight = Vector3.Cross(direction, transform.up);
+            var directionRight = Vector3.Cross(direction, transform.up);
             return Vector3.Cross(slopeNormal, directionRight).normalized;
         }
 
-        void UpdateCharacterHeight(bool force)
+        private void UpdateCharacterHeight(bool force)
         {
             // Update height instantly
             if (force)
@@ -644,7 +617,7 @@ namespace Unity.FPS.Gameplay
         }
 
         // returns false if there was an obstruction
-        bool SetCrouchingState(bool crouched, bool ignoreObstructions)
+        private bool SetCrouchingState(bool crouched, bool ignoreObstructions)
         {
             // set appropriate heights
             if (crouched)
@@ -656,40 +629,30 @@ namespace Unity.FPS.Gameplay
                 // Detect obstructions
                 if (!ignoreObstructions)
                 {
-                    Collider[] standingOverlaps = Physics.OverlapCapsule(
+                    var standingOverlaps = Physics.OverlapCapsule(
                         GetCapsuleBottomHemisphere(),
                         GetCapsuleTopHemisphere(CapsuleHeightStanding),
                         m_Controller.radius,
                         -1,
                         QueryTriggerInteraction.Ignore);
-                    foreach (Collider c in standingOverlaps)
-                    {
+                    foreach (var c in standingOverlaps)
                         if (c != m_Controller)
-                        {
                             return false;
-                        }
-                    }
                 }
 
                 m_TargetCharacterHeight = CapsuleHeightStanding;
             }
 
-            if (OnStanceChanged != null)
-            {
-                OnStanceChanged.Invoke(crouched);
-            }
+            if (OnStanceChanged != null) OnStanceChanged.Invoke(crouched);
 
             IsCrouching = crouched;
             return true;
         }
-        
+
         public void AddForce(Vector3 force, bool resetVelocity = false)
         {
-            if (resetVelocity)
-            {
-                CharacterVelocity = Vector3.zero;
-            }
-            
+            if (resetVelocity) CharacterVelocity = Vector3.zero;
+
             // Apply the force
             CharacterVelocity += force;
 
@@ -697,8 +660,8 @@ namespace Unity.FPS.Gameplay
             {
                 IsGrounded = false;
                 m_GroundNormal = Vector3.up;
-                
-                m_LastTimeJumped = Time.time; 
+
+                m_LastTimeJumped = Time.time;
             }
         }
     }

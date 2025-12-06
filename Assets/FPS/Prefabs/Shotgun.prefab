@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 6700258315707826041}
   - component: {fileID: 7301140533808347772}
   - component: {fileID: -4197018671496185848}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -276,9 +276,61 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4842357938954333016, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4620282718447106903, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4286230736459369511, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1217030297075129771, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1217030297075129771, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
       propertyPath: m_Name
       value: SM_Gun_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2040542448765327740, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2040542448765327740, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3564783574603935192, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587788796799408565, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751722455107475264, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7369095547067245513, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7750397243111347764, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -521,7 +573,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7534162388597001602, guid: c383d29cf55960243aaeeedac17569b7, type: 3}
 --- !u!59 &4939332518717412566
