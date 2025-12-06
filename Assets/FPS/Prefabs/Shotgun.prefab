@@ -806,6 +806,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   MuzzleFlashPrefab: {fileID: 1376696033527059834, guid: 88108968e5b7c5d4b8820ffca0d86646, type: 3}
+  MuzzleFlashRocketJumpPrefab: {fileID: 1376696033527059834, guid: 04fdc26cf78081847ab5f93c3ea4ecd9, type: 3}
   ShootSfx: {fileID: 0}
   RocketJumpSfx: {fileID: 0}
   ChangeWeaponSfx: {fileID: 0}
