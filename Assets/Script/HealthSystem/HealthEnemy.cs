@@ -61,10 +61,10 @@ public class HealthEnemy : MonoBehaviour
 
     private void UpdateHUD()
     {
-        if (healthCanvas != null)
+        if (healthCanvas)
         {
             Slider healthSlider = healthCanvas.GetComponentInChildren<Slider>();
-            if (healthSlider != null)
+            if (healthSlider)
             {
                 healthSlider.value = currentHealth / maxHealth;
             }
