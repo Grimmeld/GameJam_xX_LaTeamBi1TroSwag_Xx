@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Script.Enemy;
+using Script.UI;
+using System;
 using System.Collections;
-using Script.Enemy;
 using Unity.FPS.Gameplay;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace FPS.Scripts.Game.Shared
     [RequireComponent(typeof(AudioSource))]
     public class WeaponController : MonoBehaviour
     {
+
+
         [Header("Primary Fire (Single Shot)")] [Tooltip("Max distance for damage")]
         public float WeaponRange = 15f;
         
@@ -51,10 +54,14 @@ namespace FPS.Scripts.Game.Shared
         public AudioClip DryFireSfx;
         private AudioSource m_AudioSource;
 
+        [Header("Reload")]
+        [SerializeField] public int ammoStock;
         private int m_CurrentAmmo;
         private float m_LastRocketJumpTime;
         private float m_LastTimeShot;
         private readonly int m_MaxAmmo = 2;
+
+
 
         public Action OnShoot;
 
@@ -72,6 +79,12 @@ namespace FPS.Scripts.Game.Shared
             m_CurrentAmmo = m_MaxAmmo;
             m_AudioSource = GetComponent<AudioSource>();
             if (!m_AudioSource) m_AudioSource = gameObject.AddComponent<AudioSource>();
+
+        }
+
+        private void Start()
+        {
+            UpdateHUD();
         }
 
         private void Update()
@@ -148,7 +161,8 @@ namespace FPS.Scripts.Game.Shared
                         
                         var totalDmg = Mathf.Lerp(DamagePerShell, MinDamagePerShell, dist / WeaponRange);
 
-                        if(hit.TryGetComponent<Health>(out var playerHealth))
+                        //if(hit.TryGetComponent<Health>(out var playerHealth))
+                        if(hit.TryGetComponent<HealthEnemy>(out var playerHealth))
                         {
                             Debug.Log("3");
 
@@ -180,8 +194,8 @@ namespace FPS.Scripts.Game.Shared
             Debug.Log("SHOT");
 
 
-
             m_CurrentAmmo--;
+            UpdateHUD();
 
             // Visuals
             if (ShootSfx) m_AudioSource.PlayOneShot(ShootSfx);
@@ -247,8 +261,27 @@ namespace FPS.Scripts.Game.Shared
             if (ReloadSfx) m_AudioSource.PlayOneShot(ReloadSfx);
             if (WeaponAnimator) WeaponAnimator.SetTrigger("Reload");
             yield return new WaitForSeconds(ReloadDuration);
-            m_CurrentAmmo = m_MaxAmmo;
+
+            if (ammoStock >= 0)
+            {
+                if (m_CurrentAmmo <= 0) { ammoStock = ammoStock - (m_MaxAmmo - m_CurrentAmmo); } // Change ammo stock
+            }
+            else
+            {
+                Debug.Log("Can't reload");
+            }
+
+                m_CurrentAmmo = m_MaxAmmo;
+
+            UpdateHUD();
+
             IsReloading = false;
         }
+
+        public void UpdateHUD()
+        {
+            if (UIManager.Instance) { UIManager.Instance.UpdateAmmoHUD(m_CurrentAmmo, ammoStock); }
+        }
+            
     }
 }

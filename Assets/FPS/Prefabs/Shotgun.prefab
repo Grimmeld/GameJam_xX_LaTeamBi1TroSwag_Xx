@@ -350,6 +350,7 @@ MonoBehaviour:
   ChangeWeaponSfx: {fileID: 0}
   ReloadSfx: {fileID: 0}
   DryFireSfx: {fileID: 0}
+  ammoStock: 10
 --- !u!1001 &2976979974508884694
 PrefabInstance:
   m_ObjectHideFlags: 0

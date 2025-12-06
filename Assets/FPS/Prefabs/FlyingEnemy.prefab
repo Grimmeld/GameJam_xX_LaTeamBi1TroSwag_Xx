@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 276686700066509750}
   - component: {fileID: 5961650047263431326}
   - component: {fileID: 9081342571727242790}
+  - component: {fileID: -4008250712623576038}
   m_Layer: 3
   m_Name: FlyingEnemy
   m_TagString: Untagged
@@ -255,6 +256,23 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-4008250712623576038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5462395333185114888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 015b23a2a51eb644b81940b04d15ac6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  currentHealth: 50
+  healthCanvas: {fileID: 0}
+  enemyRend: {fileID: 180039552518059292}
+  DamageColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &6450127702956457835
 GameObject:
   m_ObjectHideFlags: 0

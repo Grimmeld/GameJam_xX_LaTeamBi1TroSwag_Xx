@@ -91,6 +91,7 @@ namespace FPS.Scripts.Gameplay.Managers
 
         public UnityAction<WeaponController> OnSwitchedToWeapon;
 
+
         public bool IsAiming { get; private set; }
         public bool IsPointingAtEnemy { get; private set; }
         public int ActiveWeaponIndex { get; private set; }
@@ -180,9 +181,11 @@ namespace FPS.Scripts.Gameplay.Managers
                         1000, -1, QueryTriggerInteraction.Ignore))
                 {
                     //if (hit.collider.GetComponentInParent<Health>() != null)
-                    //{
-                    //    IsPointingAtEnemy = true;
-                    //}
+                    if (hit.collider.GetComponentInParent<HealthEnemy>() != null)
+                    {
+                        Debug.Log("hit heatlth game object");
+                        IsPointingAtEnemy = true;
+                    }
                 }
         }
 

@@ -1,3 +1,5 @@
+using Script.Enemy;
+using Script.Enemy.Unity.FPS.Game;
 using Script.UI;
 using TMPro;
 using Unity.FPS.Gameplay;
@@ -5,8 +7,9 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    // Player health
     [SerializeField] private float maxHealth;
-    [SerializeField] private float currentHealth;
+    private float currentHealth;
 
 
     private void Start()
@@ -30,7 +33,7 @@ public class Health : MonoBehaviour
 
     }
 
-    public void GetHealth(float bonus)
+    public void AddHealth(float bonus)
     {
 
         currentHealth += bonus;
@@ -44,9 +47,14 @@ public class Health : MonoBehaviour
         UpdateHUD();
     }
 
+    public float GetHealth()
+    {
+        return currentHealth;
+    }
+
     private void UpdateHUD()
     {
-        if (UIManager.Instance)
+        if (UIManager.Instance) 
         {
             UIManager.Instance.UpdateHealthHUD(currentHealth, maxHealth);
         }
@@ -62,6 +70,8 @@ public class Health : MonoBehaviour
             return;
         }
 
-        // Enemy death
+        
+
+        
     }
 }
