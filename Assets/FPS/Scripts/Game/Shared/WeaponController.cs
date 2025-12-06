@@ -258,7 +258,12 @@ namespace FPS.Scripts.Game.Shared
         private IEnumerator ReloadSequence()
         {
             IsReloading = true;
-            if (ReloadSfx) m_AudioSource.PlayOneShot(ReloadSfx);
+            //if (ReloadSfx) m_AudioSource.PlayOneShot(ReloadSfx);
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.Play("Reload");
+            }
+
             if (WeaponAnimator) WeaponAnimator.SetTrigger("Reload");
             yield return new WaitForSeconds(ReloadDuration);
 

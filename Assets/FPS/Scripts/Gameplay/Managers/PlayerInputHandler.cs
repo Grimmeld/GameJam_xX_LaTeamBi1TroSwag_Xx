@@ -182,6 +182,14 @@ namespace FPS.Scripts.Gameplay.Managers
             return false;
         }
 
+        public bool GetPauseButtonDown()
+        {
+            if (CanProcessInput()) return Input.GetButtonDown(GameConstants.k_ButtonNamePauseMenu);
+
+            return false;
+        }
+
+
         public int GetSwitchWeaponInput()
         {
             if (CanProcessInput())
