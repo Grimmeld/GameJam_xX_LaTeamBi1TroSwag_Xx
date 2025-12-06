@@ -10,6 +10,8 @@ public class AudioManager : MonoBehaviour
     public Sound[] sounds;
     [SerializeField] AudioMixer audioMixer;
 
+    // Une liste des musique qui sont en cours de lecture
+    // Faire pause à ces musiques si on est en pause
 
     private void Awake()
     {
@@ -55,4 +57,9 @@ public class AudioManager : MonoBehaviour
     {
         audioMixer.SetFloat("effectVolume", Mathf.Log10(volume) * 20f);
     }
+
+    //private void Start()
+    //{
+    //    Play("JamSongFinal");
+    //}
 }
