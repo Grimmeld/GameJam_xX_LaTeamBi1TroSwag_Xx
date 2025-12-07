@@ -130,7 +130,8 @@ namespace FPS.Scripts.Gameplay.Managers
             if (activeWeapon && m_WeaponSwitchState == WeaponSwitchState.Up)
             {
                 if (!activeWeapon.AutomaticReload && m_InputHandler.GetReloadButtonDown() &&
-                    activeWeapon.CurrentAmmoRatio < 1.0f)
+                    activeWeapon.CurrentAmmoRatio < 1.0f
+                    && activeWeapon.ammoStock > 0)
                 {
                     IsAiming = false;
                     activeWeapon.StartReloadAnimation();
