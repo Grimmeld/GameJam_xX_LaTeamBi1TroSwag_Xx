@@ -27,9 +27,10 @@ namespace FPS.Scripts.Cinematic
             if (other.CompareTag("Player") && !isCinematicPlaying)
             {
                 StartCoroutine(PlayCinematicSequence());
+
+                GameObject.FindGameObjectWithTag("Lantern").GetComponent<LaternSwitcher>().SwitchToSecondColor();
             }
             
-            GetComponentInChildren<LaternSwitcher>().SwitchToSecondColor();
         }
 
         private IEnumerator PlayCinematicSequence()

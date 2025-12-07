@@ -51,6 +51,8 @@ public class LaternSwitcher : MonoBehaviour
     [ContextMenu("Switch to second color")]
     public void SwitchToSecondColor()
     {
+        Debug.Log("sdfkhjbsdkfhjbsdhjfbskdhfbjskdhfbksdhfbi");
+        
         if (_activeTransition != null) StopCoroutine(_activeTransition);
         _activeTransition = StartCoroutine(SmoothColorTransition(secondColor));
     }
