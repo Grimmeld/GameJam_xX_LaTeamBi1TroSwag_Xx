@@ -31,6 +31,8 @@ namespace Unity.FPS.Game
         private Transform m_PlayerTransform;
         private float m_LastAttackTime;
         private Color m_OriginalColor;
+        
+        public AudioClip DeathSound;
 
         void Start()
         {
