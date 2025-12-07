@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61c241d8aeda26044b2ddb95c79135ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicName: DialogLightFire
+  musicName: Bumper
   isPlayed: 0
 --- !u!1 &6071204559985982036
 GameObject:

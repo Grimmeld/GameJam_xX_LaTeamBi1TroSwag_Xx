@@ -878,6 +878,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lantern
       objectReference: {fileID: 0}
+    - target: {fileID: 4766320316478326730, guid: b45236852af67cb4d8fab8591354a498, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5337521840560257943, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -888,6 +892,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5991053882459184910, guid: b45236852af67cb4d8fab8591354a498, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6572637063921461412, guid: b45236852af67cb4d8fab8591354a498, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770904994456025910, guid: b45236852af67cb4d8fab8591354a498, type: 3}
