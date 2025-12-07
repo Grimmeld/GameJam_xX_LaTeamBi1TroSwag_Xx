@@ -49,9 +49,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 882129737928793925, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 882129737928793925, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1f29c1b898173664fbf0c0e6964fd59f, type: 2}
+    - target: {fileID: 882129737928793925, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 467f423b30150aa4ca598f6ae67e3f46, type: 2}
     - target: {fileID: 919132149155446097, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
       propertyPath: m_Name
       value: Sword01
@@ -71,5 +79,27 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4816325189656910777}
   m_SourcePrefab: {fileID: 100100000, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
+--- !u!1 &2526516718270052653 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 25609a1f2125a1f4792b969b76f7df0d, type: 3}
+  m_PrefabInstance: {fileID: 3444853768986772604}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4816325189656910777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2526516718270052653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6111d2408515f3e45ae2d131b6717b9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runOnAwake: 1
+  cloneMesh: 1
