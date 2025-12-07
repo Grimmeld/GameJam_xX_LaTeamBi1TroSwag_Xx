@@ -24922,12 +24922,8 @@ MonoBehaviour:
   m_VersionIndex: 6310
   m_IsSelectable: 1
   m_SelectedFaces: 
-  m_SelectedEdges:
-  - a: 12
-    b: 13
-  - a: 15
-    b: 14
-  m_SelectedVertices: 0c0000000d0000000f0000000e000000
+  m_SelectedEdges: []
+  m_SelectedVertices: 
 --- !u!114 &5416159111684322541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30900,7 +30896,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5720044196384885025, guid: 6e191f81d3e064349bcf2a768c6e74d5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.47
+      value: 4.72
       objectReference: {fileID: 0}
     - target: {fileID: 5720044196384885025, guid: 6e191f81d3e064349bcf2a768c6e74d5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30908,7 +30904,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5720044196384885025, guid: 6e191f81d3e064349bcf2a768c6e74d5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -19.74
+      value: -19.739998
       objectReference: {fileID: 0}
     - target: {fileID: 5720044196384885025, guid: 6e191f81d3e064349bcf2a768c6e74d5, type: 3}
       propertyPath: m_LocalRotation.w
