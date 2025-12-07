@@ -14,6 +14,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene_Lea.unity
     guid: 03d0dc0f8d8770142878fc4b33805941
+  - enabled: 1
+    path: Assets/Scenes/Level_Art_Recto.unity
+    guid: 437a8702773fb30498c6ba31dacd353e
+  - enabled: 1
+    path: Assets/Scenes/Level_Art_Top.unity
+    guid: 3081956cda4a71b4d97e4aff8d11f40a
+  - enabled: 1
+    path: Assets/Scenes/Level_Art_Verso.unity
+    guid: 99060f720f49b1740a144c8740e52454
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
