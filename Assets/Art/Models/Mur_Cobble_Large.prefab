@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6564889314660036285}
   - component: {fileID: 5439650872899649842}
+  - component: {fileID: 6771306835306080562}
   m_Layer: 0
   m_Name: Mur_Cobble_Large
   m_TagString: Untagged
@@ -62,6 +63,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runOnAwake: 1
   cloneMesh: 1
+--- !u!65 &6771306835306080562
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2978247134625198643}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 24.114288, y: 24.060625, z: 0.06084442}
+  m_Center: {x: 9.053638, y: 8.999425, z: 0.0033054352}
 --- !u!1001 &25346213951804682
 PrefabInstance:
   m_ObjectHideFlags: 0
