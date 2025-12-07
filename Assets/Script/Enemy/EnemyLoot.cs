@@ -22,18 +22,23 @@ public class EnemyLoot : MonoBehaviour
 
     private GameObject player;
     
-    [SerializeField] public AudioSource deathSound;
+    //[SerializeField] public AudioSource deathSound;
+    [SerializeField] public string deathSound;
 
     private void Start()
     {
-        deathSound = GetComponent<AudioSource>();
+        //deathSound = GetComponent<AudioSource>();
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
 
     private void OnDestroy()
     {
-         deathSound.Play();
+         //deathSound.Play();
+         if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlayOnActor(deathSound, this.gameObject);
+        }
         
         if(loots.Count > 0)
         {

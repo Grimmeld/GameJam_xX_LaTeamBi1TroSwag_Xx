@@ -96,6 +96,7 @@ MonoBehaviour:
   TimeBetweenAttacks: 1.5
   AttackColor: {r: 1, g: 0, b: 0, a: 1}
   EnemyRenderer: {fileID: 0}
+  DeathSound: {fileID: 0}
 --- !u!136 &9114337172149299924
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -137,6 +138,7 @@ MonoBehaviour:
   - {fileID: 7344317653679387701, guid: a36068748d65e5248b357851d7f180ef, type: 3}
   minAmmo: 10
   minHealth: 50
+  deathSound: EnemyDeath
 --- !u!1001 &2777059599816208720
 PrefabInstance:
   m_ObjectHideFlags: 0
