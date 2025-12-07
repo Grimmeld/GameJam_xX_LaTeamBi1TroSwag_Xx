@@ -1,41 +1,68 @@
 using System.Collections;
 using UnityEngine;
 
-public class CameraRotation : MonoBehaviour
-{
-public Camera camera;
-public Camera playercamera;
-private bool LaunchCinematic = false;
-
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+namespace FPS.Scripts.Cinematic
+{ 
+    public class CameraRotation : MonoBehaviour
     {
-        
-    }
+        [Header("Paramètres des Caméras")]
+        public Camera cinematicCamera;
+        public Camera playerCamera;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (camera.transform.rotation.eulerAngles.z < 180)
-            //if(LaunchCinematic==true)
+        [Header("Réglages de l'Animation")]
+        public float rotationDuration = 2.0f;
+
+        private bool isCinematicPlaying = false;
+
+        [SerializeField] public Collider colliderToEnable;
+
+        private void Start()
         {
-
-            camera.transform.Rotate(new Vector3(0, 0, 1));
-
+            if(cinematicCamera) cinematicCamera.gameObject.SetActive(false);
+            if(playerCamera) playerCamera.gameObject.SetActive(true);
         }
 
-        void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
-            LaunchCinematic = true;
-        }
-
-        IEnumerator LaunchCinemaric()
-        {
-            camera.depth = 1;
+            if (other.CompareTag("Player") && !isCinematicPlaying)
+            {
+                StartCoroutine(PlayCinematicSequence());
+            }
             
-            yield return null;
+            GetComponentInChildren<LaternSwitcher>().SwitchToSecondColor();
+        }
+
+        private IEnumerator PlayCinematicSequence()
+        {
+            isCinematicPlaying = true;
+
+            playerCamera.gameObject.SetActive(false);
+            cinematicCamera.gameObject.SetActive(true);
+
+            Quaternion startRotation = cinematicCamera.transform.rotation;
+            Quaternion endRotation = startRotation * Quaternion.Euler(0, 0, 180);
+
+            float timeElapsed = 0;
+
+            while (timeElapsed < rotationDuration)
+            {
+                cinematicCamera.transform.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / rotationDuration);
+            
+                timeElapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            cinematicCamera.transform.rotation = endRotation;
+
+            yield return new WaitForSeconds(0.5f);
+
+            cinematicCamera.gameObject.SetActive(false);
+            playerCamera.gameObject.SetActive(true);
+
+            isCinematicPlaying = false;
+            GetComponent<Collider>().enabled = false;
+
+            colliderToEnable.enabled = true;
         }
     }
 }
-
